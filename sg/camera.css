@@ -1,0 +1,106 @@
+@charset "utf-8";
+/* CSS Document */
+#header {
+	background:url("images/hd1.png");
+	width:980px;
+	height:200px;
+	margin: 10px;
+	position: relative;
+} 
+.log3{
+	border-bottom: solid 1px #b0bb88;
+	display: block;
+	font: bold 30px Comfortaa;
+	padding-bottom: 10px;
+	color: #212713;
+	float: right;
+}
+#lvd0,#lvd1,#lvd2,#lvd3,#lvd4,#lvd5,#lvd6,#lvd7,#lvd8,#lvd9,#lvd10,#lvd11,#lvd12,#lvd13,#lvd14,#lvd15,#lvd16,#lvd17,#lvd18,#lvd19,#lvd20,#lvd21,#lvd22,#lvd23,#lvd24,#lvd25,#lvd26,#lvd27,#lvd28,#lvd29{
+	border-bottom: solid 3px #b0bb88;
+	display: block;
+	font: bold 21px Comfortaa;
+	padding-bottom: 10px;
+	color: #212713;
+	margin-top: 20px;
+	cursor: pointer;
+	text-decoration: underline;
+}
+#pvd0,#pvd1,#pvd2,#pvd3,#pvd4,#pvd5,#pvd6,#pvd7,#pvd7,#pvd9,#pvd10,#pvd11,#pvd12,#pvd13,#pvd14,#pvd15,#pvd16,#pvd17,#pvd18,#pvd19,#pvd20,#pvd21,#pvd22,#pvd23,#pvd24,#pvd25,#pvd26,#pvd27,#pvd28,#pvd29{
+	
+	padding: 10px 10px 10px 10px;
+	
+}
+.m4,.m5{	
+	padding: 3px;
+	font-weight: normal;
+}
+#smit,#smit2{
+	margin: 20px 500px 10px 200px;
+	padding: 5px;
+	cursor: pointer;
+}
+#left_con{
+	width: 270px;
+	height: 580px;
+	float: left;
+}
+#right_con{
+	width: 560px;
+	background:#6E8B3D;
+	height: 200px;
+	float: right;
+	height: 580px;
+}
+#mainpage{
+	background:#6E8B3D;
+	width:960px;
+	margin:10px;
+	position: relative;
+	padding-top: 10px;
+	height: 600px; 
+}
+#message{
+	height: 530px; 
+	width: 740px; 
+	overflow: auto; 
+	background-color: silver; 
+	border: 2px solid #555555;
+	margin-top: 70px;
+	padding-left: 20px;
+}
+button {
+	cursor: pointer;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 50px;
+	padding: 5px 10px 5px 10px;
+	font-weight: bold;
+}
+#title_back select {
+	width: 190px;
+	padding: 2px;
+}
+#title_back{
+	margin-top: 50px;
+}
+.log4{
+	border-bottom: solid 1px #b0bb88;
+	display: block;
+	font: bold 21px Comfortaa;
+	padding-bottom: 10px;
+	color: #212713;
+	margin-top: 50px;
+}
+.btn-info{
+	width:100px;
+	height:40px;
+	}
+#ttlogin{
+	float: right;
+    }
+#ttlogin a{
+	color: white;
+     }
+td u,b {
+		color: white;
+	}

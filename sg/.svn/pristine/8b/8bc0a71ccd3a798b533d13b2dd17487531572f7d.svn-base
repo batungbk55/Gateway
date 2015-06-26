@@ -1,0 +1,18 @@
+<table>
+  <tr>
+    <td id="del1" style="width: 140px;padding : 50px 7px 7px 50px;font-weight: bold;">Node ID (MAC):</td>
+    <td style="padding-top: 50px;"><select id="snode"><option value="">--Chọn node mạng--</option>
+<?php
+require 'dbconnect.php'; 
+$sql1 = "SELECT mac FROM node WHERE 1";
+$query1 = mysql_query($sql1);
+while ($row1 = mysql_fetch_array($query1)){
+	$mac = $row1['mac'];
+	echo "<option value='".$mac."' >Node ".$mac."</option>";
+}
+?>
+	</select>
+	</td>
+</tr>
+</table>
+<button onclick="find()" id="d_create">Tìm đường</button>

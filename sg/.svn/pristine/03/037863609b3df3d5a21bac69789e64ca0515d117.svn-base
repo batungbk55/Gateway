@@ -1,0 +1,384 @@
+<?php session_start();
+require 'dbconnect.php';
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Heaven 1</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="map.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src = "jquery.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	var Idrd = '<?php 
+		$result = mysql_query("SELECT MAX(id) FROM road");
+	    $row = mysql_fetch_row($result);
+	    $highest_id = $row[0];
+	    echo $highest_id;
+	?>';
+	setInterval(function(){
+		$.get("test2.php",function(data){
+			if(data > Idrd){
+				drawline(data);
+				Idrd = data;
+			}
+		});
+	},500);
+	function drawline(data){
+		alert(data);
+	}
+	
+	$("#add").click(function(){
+		$(this).css({"background-color":"#6E8B3D","font-size":"22px"});
+		$("#del").css({"background-color":"#7CCD7C","font-size":"15px"});
+		$("#edit").css({"background-color":"#7CCD7C","font-size":"15px"});
+		$("#road").css({"background-color":"#7CCD7C","font-size":"15px"});
+		$("#middle_content").load("a.php");
+	});
+	$("#del").click(function(){	
+		$(this).css({"background-color":"#6E8B3D","font-size":"22px"});
+		$("#add").css({"background-color":"#7CCD7C","font-size":"15px"});
+		$("#edit").css({"background-color":"#7CCD7C","font-size":"15px"});
+		$("#road").css({"background-color":"#7CCD7C","font-size":"15px"});		
+		$("#middle_content").load("b.php");
+	});
+	$("#edit").click(function(){	
+		$(this).css({"background-color":"#6E8B3D","font-size":"22px"});
+		$("#del").css({"background-color":"#7CCD7C","font-size":"15px"});
+		$("#add").css({"background-color":"#7CCD7C","font-size":"15px"});
+		$("#road").css({"background-color":"#7CCD7C","font-size":"15px"});
+		$("#middle_content").load("c.php");
+	});
+	$("#road").click(function(){	
+		$(this).css({"background-color":"#6E8B3D","font-size":"22px"});
+		$("#del").css({"background-color":"#7CCD7C","font-size":"15px"});
+		$("#edit").css({"background-color":"#7CCD7C","font-size":"15px"});
+		$("#add").css({"background-color":"#7CCD7C","font-size":"15px"});
+		$("#middle_content").load("d.php");
+	});
+	$("#catn").change(function(){
+		  $("#macn").focus();
+	});
+	$('[rel=tooltip]').bind('mouseover', function(){
+		 if ($(this).hasClass('ajax')) {
+			var ajax = $(this).attr('ajax');				
+		  	$.get(ajax,function(theMessage){
+				$('<div class="tooltip">'  + theMessage + '</div>').appendTo('body').fadeIn('fast');});		 
+		 }
+		 else{
+		 	var theMessage = $(this).attr('content');
+			$('<div class="tooltip">' + theMessage + '</div>').appendTo('body').fadeIn('fast');
+		}
+		$(this).bind('mousemove', function(e){
+			$('div.tooltip').css({
+				'top': e.pageY - ($('div.tooltip').height() / 2) - 5,
+				'left': e.pageX + 15
+			});
+		});
+	}).bind('mouseout', function(){
+		$('div.tooltip').fadeOut('fast', function(){
+			$(this).remove();
+		});
+	});
+});
+
+var isLogin='<?php if(isset($_SESSION['login_status'])){if($_SESSION['login_status']=='yes')echo 'yes';else echo 'no';}else echo 'no';?>';
+var isLevel='<?php if(isset($_SESSION['level'])){echo $_SESSION['level'];}?>';
+function str_status(){
+	if(isLogin=='yes'){			 
+		var content = "<table><tr><td><a href='signout.php'>Ðang xuất</a></td><td></td></tr></table>";
+		document.getElementById('ttlogin').innerHTML=content;
+	}
+	else{
+		var content = "<table><tr><td> <a href='register.php'>Đăng ký</a>|<a href='login.php'>Đăng nhập</a></td></td></tr></table>";
+		document.getElementById('ttlogin').innerHTML=content;
+	}
+}
+function createRequestObject(){
+	var ro;
+	var browser = navigator.appName;
+	if(browser == "Microsoft Internet Explorer"){ro = new ActiveXObject("Microsoft.XMLHTTP");}
+	else{ro = new XMLHttpRequest();}
+	return ro;
+}
+var http1 = createRequestObject();
+var http2 = createRequestObject();
+var http3 = createRequestObject();
+var http4 = createRequestObject();
+function addnode(){
+	if(isLevel==1){		
+		var mac=document.getElementById("macn").value;
+		var lat=document.getElementById("latn").value;
+		var lon=document.getElementById("lonn").value;
+		var e = document.getElementById("catn");
+		var cat = e.options[e.selectedIndex].value;
+		var flag=0;
+		if(mac==""){
+			document.getElementById('mac_alert').innerHTML="Chưa nhập giá trị mac.";
+			flag=1;
+		}
+		else{
+			document.getElementById('mac_alert').innerHTML="";
+		}					
+		if(lat==""){
+			document.getElementById('lat_alert').innerHTML="Chưa nhập giá trị vĩ độ.";
+			flag=1;
+		}
+		else{
+			document.getElementById('lat_alert').innerHTML="";
+		}		
+		if(lon==""){
+			document.getElementById('lon_alert').innerHTML="Chưa nhập giá trị kinh độ.";
+			flag=1;
+		}
+		else{
+			document.getElementById('lon_alert').innerHTML="";
+		}		
+		if(cat==""){
+			document.getElementById('cat_alert').innerHTML="Chưa chọn loại node mạng.";
+			flag=1;
+		}
+		else{
+			document.getElementById('cat_alert').innerHTML="";
+		}		
+		if(flag==0){
+			var params="mac="+mac+"&lat="+lat+"&lon="+lon+"&cat="+cat;
+			exe_add(params);
+		}
+	}
+	else{
+		alert("Bạn chưa đăng nhập hoặc không được phép!");
+		document.getElementById("macn").innerHTML="";
+		document.getElementById("latn").innerHTML="";
+		document.getElementById("lonn").innerHTML="";
+		document.getElementById("catn").innerHTML="";
+	}
+}
+function exe_add(params){
+	http1.open('POST', 'exe_add.php', true);
+	http1.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	http1.setRequestHeader("Content-length", params.length);
+	http1.setRequestHeader("Connection", "close");
+    http1.onreadystatechange = handleResponse1;
+  	http1.send(params);
+}
+function handleResponse1() {
+	if(http1.readyState == 4){
+  		var response1 = http1.responseText;
+  		if(response1=="lat"){
+  	  		alert("Nhập sai giá trị vĩ độ");
+  	  		document.getElementById("latn").innerHTML="";
+  		}
+  		if(response1=="lon"){
+  			alert("Nhập sai giá trị kinh độ");
+  	  		document.getElementById("lonn").innerHTML="";
+  		}
+  		if(response1=="mac"){
+  			alert("Node mạng này đã tồn tại.");
+  	  		document.getElementById("macn").innerHTML="";
+  		}
+  		if(response1=="val"){
+  			alert("Val này đã tồn tại.");
+  	  		document.getElementById("macn").innerHTML="";
+  		}
+  		if(response1=="ok"){
+  	  		alert("Ðã thêm node thành công");
+  		}
+  	}
+	window.location.reload();
+}
+
+function delnode(){
+	if(isLevel==1){
+		var e = document.getElementById("snode");
+		var mac = e.options[e.selectedIndex].value;
+		var flag=0;
+		if(mac==""){
+			alert("Chua ch?n node m?ng");
+			flag=1;
+		}
+		if(flag ==0){		
+			var params = "m="+mac;
+			exe_del(params);
+		}
+	}
+	else{
+		alert("Bạn chưa đăng nhập hoặc không được phép!");
+	}
+}
+function exe_del(params){
+	http2.open('POST', 'exe_del.php', true);
+	http2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	http2.setRequestHeader("Content-length", params.length);
+	http2.setRequestHeader("Connection", "close");
+    http2.onreadystatechange = handleResponse2;
+  	http2.send(params);
+}
+function handleResponse2() {
+	if(http2.readyState == 4){
+  		var response2 = http2.responseText;
+  		alert(response2);
+  		window.location.reload();
+	}
+}
+
+function find(){
+	if(isLevel==1){
+		var e = document.getElementById("snode");
+		var mac = e.options[e.selectedIndex].value;
+		var flag=0;
+		if(mac==""){
+			alert("Chưa chọn node mạng");
+			flag=1;
+		}
+		if(flag ==0){		
+			var params = "m="+mac;
+			exe_find(params);
+		}
+	}
+	else{
+		alert("Bạn chưa đăng nhập hoặc không được phép!");
+	}
+}
+function exe_find(params){
+	http4.open('POST','send2.php', true);
+	http4.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	http4.setRequestHeader("Content-length", params.length);
+	http4.setRequestHeader("Connection", "close");
+    http4.onreadystatechange = handleResponse4;
+  	http4.send(params);
+}
+function handleResponse4() {
+	if(http4.readyState == 4){
+  		var response4 = http4.responseText;
+  		if(response4 != null){
+			alert("Xin vui lòng đợi ...");
+			
+		}
+	}
+}
+function line(x0, y0, x1, y1)
+{
+	var dx = x1 - x0;
+	var dy = y1 - y0;
+	putpixel(x0, y0);
+	if (Math.abs(dx) > Math.abs(dy)){// slope < 1		
+		var m =  dy /  dx;      // compute slope
+		var b = y0 - m*x0;
+		dx = (dx < 0) ? -1 : 1;
+		while (x0 != x1){
+		x0 += dx;
+		putpixel(x0, Math.round(m*x0 + b));
+		}
+	}  	
+	else if (dy != 0){                               		// slope >= 1
+		var m = dx / dy;      // compute slope
+		var b = x0 - m*y0;
+		dy = (dy < 0) ? -1 : 1;
+		while (y0 != y1){
+			y0 += dy;
+			putpixel(Math.round(m*y0 + b), y0);
+		}
+	}
+}
+function putpixel(x,y){
+	var img = document.createElement("span");
+	img.style.position = "absolute";
+	img.style.left = x + "px";
+	img.style.width = "1px";
+	img.style.height = "1px";
+	img.style.border = "1px solid red";
+	img.style.top = y + "px";
+	bdy = document.getElementById("mymap");
+	bdy.insertBefore(img, null);
+}
+</script>
+</head>
+
+<body onload="str_status()">
+<div id="wrap">
+  	<div id="top">
+	    <h1 id="sitename">Sigate <em>WSAN</em> LAb 411</h1>
+	    <div id="ttlogin"></div>
+  	</div>
+  
+	<div id="menu">
+		<ul>
+	    	<li><a href="index.php"><span>Home</span></a></li>
+	      	<li class="active"><a href="map.php"><span>Map</span></a></li>
+	      	<li><a href="gateway.php"><span>Gateway</span></a></li>
+	      	<li><a href="video.php"><span>Video</span></a></li>
+	      	<li><a href="manage.php"><span>Manage</span></a></li>
+	   	</ul>
+	</div>
+	
+  	<div id="contentwrap">
+    <div id="header">
+    	<div id="left_map">	    	
+	    	<div id="add">Add node</div>
+	    	<div id="edit">Edit node</div>
+			<div id="del">Delete node</div>
+			<div id="road">Trace node</div>
+		</div>
+		<div id="m_content">
+			<div id="middle_content">
+			<?php include 'a.php';?>
+			</div>
+		</div> 
+    </div>
+    <div id="mainpage">
+    	<div id="mymap"><img alt="Map" src="vuonlan.png"></div>
+<?php 
+$sql3 = "SELECT * FROM node_coor WHERE 1";
+$query3 = mysql_query($sql3);
+while ($row3 = mysql_fetch_array($query3)){
+	$mac = $row3['mac'];
+	$px = $row3['px'];
+	$py = $row3['py'];
+	if ($row3['nodecat']=="actor"){
+		?>
+		<div class="ic" style="position: absolute;left: <?php echo $py ?>px;top: <?php echo $px ?>px; z-index:1; cursor: pointer;">
+			<img src="images/green.png" style="position: absolute;left: -5px;top: -2px; z-index: -1000"/>
+			<a href="thongso.php?mac=<?php echo $mac?>" Tooltip rel=tooltip content="<div id=con>Latitude :<?php echo $row3['lat']?></div><div id=con>Longtitude:<?php echo $row3['lon']?></div>" ><?php echo $mac?></a>
+		</div>		
+		<?php 
+	}
+	else {
+		?>
+		<div class="ic" style="position: absolute;left: <?php echo $py ?>px;top: <?php echo $px ?>px; z-index:1; cursor: pointer;">
+			<img src="images/red.png" style="position: absolute;left: -5px;top: -2px; z-index: -1000"/>
+			<a href="thongso.php?mac=<?php echo $mac?>" Tooltip rel=tooltip content="<div id=con>Nhiet do:<?php echo $row3['temp']?></div><div id=con>Do am:<?php echo $row3['humi']?></div><div id=con>Nang luong:<?php echo $row3['ener']?></div><div id=con>Trang thai:<?php echo $row3['status']?></div>" ><?php echo $mac?></a>
+		</div>
+		<?php
+	}
+}
+$sql4 = "SELECT * FROM val_coordinates WHERE 1";
+$query4 = mysql_query($sql4);
+while ($row4 = mysql_fetch_array($query4)){
+	$id = $row4['val'];
+	$px = $row4['px'];
+	$py = $row4['py'];
+	?>
+	<div class="ic" style="position: absolute; left: <?php echo $py ?>px;top: <?php echo $px ?>px; z-index:1; cursor: pointer;">
+		<img src="images/yellow.png" style="position: absolute;left: -5px;top: -2px; z-index: -1000"/>
+		<a href="tt.php?id=<?php echo $row4['id']?>" Tooltip rel=tooltip content="<div id=con>Actor quan ly :<?php echo $row4['actor']?></div><div id=con>Latitude:<?php echo $row4['lat']?></div><div id=con>Longtitude:<?php echo $row4['lon']?></div><div id=con>Trang thai:<?php echo $row4['status']?></div>" >V<?php echo $row4['val']?></a>
+	</div>
+	<?php
+}
+?>
+</div>    
+	<div id="bottom">
+		<div id="footer">
+	        <div id="fl_left">&copy; YourSitename.com | All Rights Reserved</div>
+	        <div id="fl_right">
+	        <a href="http://www.websitetemplateco.com/">Free CSS Templates</a> by 
+	        <a href="http://cssheaven.org">CSS Heaven</a>
+	        </div>
+	        <div class="clear"></div>
+		</div>
+    </div>
+</div>
+<div id="contentbtm"></div>
+</div>
+</body>
+</html>

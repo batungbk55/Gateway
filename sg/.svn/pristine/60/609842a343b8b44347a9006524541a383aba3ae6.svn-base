@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * @author ChienThang
+ * @copyright 2013
+ */
+
+
+
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+    <title></title>
+</head>
+<script>
+	function init_reload(){
+	    setInterval( function() {
+	               
+	               window.location.href="action.php";
+
+	      },3000);
+	}
+   // init_reload();
+</script>
+	
+<body>
+
+<iframe src="server.php" scrolling="no" height="10" width="10" frameborder="0" ></iframe>
+
+</body>
+</html>

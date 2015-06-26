@@ -1,0 +1,1 @@
+C:\Users\NoName\Desktop\Gatewayv1\Emboard\bin\Debug\database.xml;C:\Users\NoName\Desktop\Gatewayv1\Emboard\bin\Debug\baochay_db.xml;http://192.168.1.2:8080/web/sg/rx.php;http://sigate.byethost7.com/sg/mymap.php;http://192.168.1.2:8080/web/sg/getdata.php;

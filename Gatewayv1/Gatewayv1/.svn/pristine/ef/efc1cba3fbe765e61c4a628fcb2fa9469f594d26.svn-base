@@ -1,0 +1,1225 @@
+﻿using System;
+using System.IO.Ports;
+using System.Text;
+using System.Drawing;
+using System.Windows.Forms;
+using System.IO;
+using System.Net;
+using System.Xml;
+using System.Collections;
+using System.Threading;
+
+namespace Emboard
+{
+     class libCOM
+    {
+        System.Windows.Forms.Timer timerTuoiCay = new System.Windows.Forms.Timer();
+        #region Bien thoi gian tuoi cay
+        public DateTime dtVal1, dtVal2, dtVal3, dtVal4, dtVal5;
+        #endregion
+        #region Trang thai Val
+        public bool onofVal1 = false, onofVal2 = false, onofVal3 = false, onofVal4 = false, onofVal5 = false;
+        #endregion
+        #region Variables
+        public enum MessageType { Incoming, Outgoing, Normal, Warning, Error };
+        public SerialPort comSMS = new SerialPort();
+        public string _portName = "";
+        public string _baudRate = "";
+        public string _parity = "";
+        public string _stopbits = "";
+        public string _databits = "";
+        public string comread = null;//Chuỗi lệnh nhận về từ COM
+        public SerialPort comPort = new SerialPort();
+        public TextBox tb;
+        public string malenhhex = "";
+        public string comweb = "";
+        float nhietdo, doam, nguon;
+        public string uricom = "";
+        public Color[] MessageColor = { Color.Blue, Color.Green, Color.Black, Color.Orange, Color.Red };
+        #endregion
+        #region thread
+        public Thread threadRequest;
+        #endregion
+
+        #region VariBaochay
+        //DateTime timeBaoChay;
+        public int count_BC = 0;
+        public static int count = 0;
+        public int index;
+        #endregion
+
+        #region Variable Ping
+        public bool ping = false;
+        public DateTime timeout;
+        public string mac_ping;
+        #endregion
+
+        #region Variable draw map
+        public Panel mypanel;
+        public TextBox mytext;
+        public PictureBox pictureBox;
+        public static Bitmap bit = new Bitmap(465, 218);
+        public Graphics gr = Graphics.FromImage(bit);
+        Font draw_font = new Font("Tahoma", 10, FontStyle.Regular);
+        SolidBrush draw_brush = new SolidBrush(Color.Black);
+        #endregion
+        public libCOM()
+        {
+            comPort.ReceivedBytesThreshold = 1;
+            comPort.DataReceived += new SerialDataReceivedEventHandler(comPort_DataReceived);
+        }
+
+        #region OpenPort
+        public int OpenPort()
+        {
+            try
+            {
+                TimerInt();
+                //timeBaoChay = DateTime.Now;
+                string[] uriarray = connection.Confix();
+                uricom = uriarray[4];
+                if (comPort.IsOpen == true) comPort.Close();
+                comPort.PortName = _portName;
+                comPort.BaudRate = int.Parse(_baudRate);
+                comPort.Parity = (Parity)Enum.Parse(typeof(Parity), _parity, true);
+                comPort.StopBits = (StopBits)Enum.Parse(typeof(StopBits), _stopbits, true);
+                comPort.DataBits = int.Parse(_databits);
+                comPort.Open();
+                return 1;
+            }
+            catch
+            {
+                return -1;
+            }
+        }
+
+        #endregion
+
+        #region WriteData
+        public void WriteData(byte[] com)
+        {
+            try
+            {
+                if (comPort.IsOpen == true)
+                {
+                    comPort.Write(com, 0, com.Length);
+                }
+            }
+            catch
+            {
+                DisplayData(MessageType.Warning, "Khong the gui du lieu xuong cong COM " + DateTime.Now + "\r\n", tb);
+            }
+        }
+        #endregion
+
+        private void comPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            try
+            {
+                if (comPort.IsOpen == true)
+                {
+                    comread = comPort.ReadLine();
+                    //comread = comPort.ReadExisting();
+                }
+                DisplayData(MessageType.Incoming, comread, tb);
+                if ((comread.Length >= 6) && (comread[0] == '#'))
+                {
+                    Converter(comread);
+                    SendToWeb();
+                }
+            }
+            catch
+            {
+                DisplayData(MessageType.Warning, "\r\nKhong the nhan du lieu tu cong COM " + DateTime.Now + "\r\n", tb);
+            }
+        }
+
+        public delegate void DlDispaly(string s);
+        #region DisplayData
+        public void DisplayData(MessageType type, string msg, TextBox listBox1)
+        {
+            listBox1.Invoke(new EventHandler(delegate
+            {
+                listBox1.Font = new Font("Tahoma", 10, FontStyle.Regular);
+                listBox1.ForeColor = MessageColor[(int)type];
+                if (count > 1800)
+                {
+                    listBox1.Text = string.Empty;
+                    count = 0;
+                }
+                listBox1.Text += msg + "\r\n";
+                listBox1.SelectionStart = listBox1.Text.Length;
+                listBox1.ScrollToCaret();
+            }));
+        }
+        #endregion
+
+        #region
+        public void COMClose()
+        {
+            try
+            {
+                if (comPort.IsOpen == true)
+                {
+                    comPort.Close();
+                }
+                if (comPort.IsOpen == false)
+                {
+                    DisplayData(MessageType.Warning, "Cong Com da duoc dong luc " + DateTime.Now+ "\r\n", tb);
+                }
+            }
+            catch
+            {
+                DisplayData(MessageType.Warning, "Khong the dong cong COM " + DateTime.Now + "\r\n", tb);
+            }
+        }
+        #endregion
+
+        public void SendToWeb()
+        {
+            try
+            {
+                string[] url1 = connection.Confix();
+                string url = url1[2];
+                string dt = "data=" + comread;
+                byte[] content = Encoding.UTF8.GetBytes(dt);
+                HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
+                httpWebRequest.Method = "POST";
+                httpWebRequest.ContentLength = content.Length;
+                httpWebRequest.ContentType = "application/x-www-form-urlencoded";
+                Stream datastream = httpWebRequest.GetRequestStream();
+                datastream.Write(content, 0, content.Length);
+                datastream.Flush();
+                datastream.Close();
+                HttpWebResponse httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                datastream = httpResponse.GetResponseStream();
+                StreamReader reader = new StreamReader(datastream);
+                string read = reader.ReadToEnd();
+                datastream.Close();
+                DisplayData(MessageType.Incoming, read, tb);
+            }
+            catch
+            {
+                DisplayData(MessageType.Error, "Khong the gui du lieu len WebServer",tb);
+            }
+        }
+
+        public void Converter(string mesg)
+        {
+            try
+            {
+                Database mydatabase = new Database();
+                switch (mesg[1])
+                {
+                    case 'J':
+                        //VD #JN: NNNN MM (7byte)
+                        JoinMang(mesg);
+                        reload(pictureBox);
+                        break;
+                    case 'A':
+                        // VD #AD: NNNN MM D1D2D3D4 D5D6D7D8 EEEE
+                        Database myDatabase = new Database();
+                        string mac = mesg.Substring(8,2);
+                        string status = "";
+                        if (mac[0] == '0')
+                        {
+                            status = myDatabase.getStatusSensor(mac);
+                        }
+                        AutoData(mesg);
+                        ////////////Canh bao muc chay rung..////////////
+                        //int nowbc = DateTime.Now.Hour * 3600 + DateTime.Now.Minute * 60 + DateTime.Now.Second; 
+                        //int timebc = timeBaoChay.Hour * 3600 + timeBaoChay.Minute * 60 + timeBaoChay.Second;
+                        //if (nowbc - timebc > 240)
+                        //{
+                        //    AutoSendCanhBao();
+                        //    timeBaoChay = DateTime.Now;
+                        //}
+                        if (status != "true" && status != "True")
+                        {
+                            reload(pictureBox);
+                        }
+                        break;
+                    case 'S':
+                        // VD: #SN: NNNN MM SS
+                        TrangThaiNode(mesg);
+                        break;
+                    case 'V':
+                        try
+                        {
+                            DisplayData(MessageType.Incoming, "Sensor " + mesg.Substring(4, 2) + " da vao che do ngu " + DateTime.Now, tb);
+                            mydatabase.setActiveSensor(mesg.Substring(4, 2), false);
+                            reload(pictureBox);
+                        }
+                        catch
+                        {
+                            DisplayData(MessageType.Error, "Luu trang thai node sensor bi loi", tb);
+                        }
+                        break;
+                    case 'O':
+                        // VD: #OK:NNNN MM SS
+                        ThongTinActor(mesg);
+                        reload(pictureBox);
+                        break;
+                    case 'R':
+                        // VD #RD: NNNN MM D1D2D3D4 D5D6D7D8 EEEE
+                        RequestData(mesg);
+                        break;
+                    case 'P':
+                        mac = mesg.Substring(8,2);
+                        mydatabase.setNodeActor(mac, mesg.Substring(4, 4), true);
+                        DisplayData(MessageType.Incoming, "Actor "+mac+" van dang ket noi", tb);
+                        ping = false;
+                        break;
+                }
+            }
+            catch
+            {
+                DisplayData(MessageType.Error, "Dinh dang ban tin bi loi", tb);
+            }
+        }
+        public void JoinMang(string mesg)
+        {
+            try
+            {
+                Database mydatabase = new Database();
+                string check = mesg.Substring(8, 2);
+                int chck = int.Parse(check, System.Globalization.NumberStyles.HexNumber);
+                if (chck < 160)
+                {
+                    DisplayData(MessageType.Incoming, "\r\n Sensor " + mesg.Substring(4, 4) + " (" + check + ") " + " : \r\n Da join vao mang luc " + DateTime.Now + " !!! \r\n", tb);
+                    if (check[0] == '3')
+                    {
+                        mydatabase.setSensor_bc(check, mesg.Substring(4, 4), true);
+                    }
+                    else
+                    {
+                        mydatabase.setNodeSensor(check, mesg.Substring(4, 4), true);
+                    }
+                }
+                if ((160 < chck) && (chck < 255))
+                {
+                    DisplayData(MessageType.Incoming, "\r\n Actor " + mesg.Substring(4, 4) + " (" + check + ") " + " : \r\n Da join vao mang " + DateTime.Now + " !!! \r\n", tb);
+                    mydatabase.setNodeActor(check, mesg.Substring(4, 4), true);
+                }
+            }
+            catch
+            {
+                DisplayData(MessageType.Incoming,"Ban tin join mang bi loi", tb);
+            }
+        }
+        public void AutoData(string mesg)
+        {
+            try
+            {
+                Database mydatabase = new Database();
+                string mac = mesg.Substring(8, 2);
+                string hexd = mesg.Substring(10, 4);
+                int td = int.Parse(hexd, System.Globalization.NumberStyles.HexNumber);
+                hexd = mesg.Substring(14, 4);
+                int rhd = int.Parse(hexd, System.Globalization.NumberStyles.HexNumber);
+                hexd = mesg.Substring(18, 4);
+                int rpd = int.Parse(hexd, System.Globalization.NumberStyles.HexNumber);
+                float rpd1 = ((float)rpd / (float)4096);
+                float rh_lind;// rh_lin:  Humidity linear 
+                nhietdo = (float)(td * 0.01 - 39.6);                  				//calc. temperature from ticks to [deg Cel]	
+                rh_lind = (float)(0.0367 * rhd - 0.0000015955 * rhd * rhd - 2.0468);     	//calc. humidity from ticks to [%RH]
+                doam = (float)((nhietdo - 25) * (0.01 + 0.00008 * rhd) + rh_lind);   		//calc. temperature compensated humidity [%RH]
+                nguon = (float)(0.78 / rpd1);                                 //calc. power of zigbee
+                if (doam > 100) doam = 100;       				//cut if the value is outside of
+                if (doam < 0.1) doam = 0;
+                DisplayData(MessageType.Incoming, "\r\nDu lieu dinh ky " + DateTime.Now + " :\r\n Sensor " + mesg.Substring(4, 4) + "(" + mac + "): \r\n     Nhiet do: " + nhietdo + "\r\n     Do am: " + doam + "\r\n     Nang luong : " + nguon + "\r\n", tb);
+                string time = DateTime.Now.ToString();
+                if (mac[0] == '3')
+                {
+                    //mydatabase.setSensor_bc(mac, mesg.Substring(4, 4), true);
+                    mydatabase.SaveDataDB(nhietdo, doam);
+                }
+                else
+                {
+                    mydatabase.updateData(mac, mesg.Substring(4, 4), true, nhietdo, doam, nguon, time);
+                    string Val = mydatabase.getVanSensor(mac);
+                    mydatabase.SaveDataDB(nhietdo, doam);
+                    //MessageBox.Show(Val);
+                    float tempmax = mydatabase.getTempMax();
+                    float humimax = mydatabase.getHumiMax();
+                    bool test = ((nhietdo > tempmax) && (doam < humimax));
+                    if (test) //Dieu kien thoa man
+                    {
+                        AutoBatVan(Val, mesg);
+                    }
+                }
+            }
+            catch
+            {
+ 
+            }
+        }
+        public void RequestData(string mesg)
+        {
+            try
+            {
+                Database mydatabase = new Database();
+                string hexd1 = mesg.Substring(10, 4);
+                int td1 = int.Parse(hexd1, System.Globalization.NumberStyles.HexNumber);
+                hexd1 = mesg.Substring(14, 4);
+                int rhd1 = int.Parse(hexd1, System.Globalization.NumberStyles.HexNumber);
+                hexd1 = mesg.Substring(18, 4);
+                int rpd3 = int.Parse(hexd1, System.Globalization.NumberStyles.HexNumber);
+                float rpd2 = ((float)rpd3 / (float)4096);
+                float rh_lind1;// rh_lin:  Humidity linear 
+                nhietdo = (float)(td1 * 0.01 - 39.6);                  				//calc. temperature from ticks to [deg Cel]	
+                rh_lind1 = (float)(0.0367 * rhd1 - 0.0000015955 * rhd1 * rhd1 - 2.0468);     	//calc. humidity from ticks to [%RH]
+                doam = (float)((nhietdo - 25) * (0.01 + 0.00008 * rhd1) + rh_lind1);   		//calc. temperature compensated humidity [%RH]
+                nguon = (float)(0.78 / rpd2);                                 //calc. power of zigbee
+                if (doam > 100) doam = 100;       				//cut if the value is outside of
+                if (doam < 0.1) doam = 0;
+                string _mac = mesg.Substring(8, 2);
+                DisplayData(MessageType.Incoming, "\r\nDu lieu theo yeu cau " + DateTime.Now + ": \r\n Sensor " + mesg.Substring(4, 4) + "(" + _mac + "): \r\n     Nhiet do: " + nhietdo + "\r\n     Do am: " + doam + "\r\n     Nang luong : " + nguon + "\r\n", tb);
+                string time1 = DateTime.Now.ToString();
+                mydatabase.updateSensor(_mac,mesg.Substring(4, 4), nhietdo, doam, nguon, time1);           
+                showdata(_mac, mesg.Substring(4, 4), nhietdo, doam, nguon,mytext);
+                
+            }
+            catch
+            {
+                DisplayData(MessageType.Error, "Luu du lieu theo yeu cau bi loi", tb);
+            }
+        }
+        public void AutoBatVan(string Val,string mesg)
+        {
+            try
+            {
+                if (Val == "V1")
+                {
+                    if (onofVal1 == false)
+                    {
+                        // Gui lenh tuoi xuong val tuong ung
+                        string command = CreateCommandA1(true, mesg.Substring(8, 2));
+                        byte[] com = ConvertTobyte(command);
+                        WriteData(com);
+                        //Mo Val,bat dau dem thoi gian
+                        onofVal1 = true;
+                        dtVal1 = DateTime.Now;
+                    }
+                }
+                if (Val == "V2")
+                {
+                    if (onofVal2 == false)
+                    {
+                        string command = CreateCommandA1(true, mesg.Substring(8, 2));
+                        //MessageBox.Show(command);
+                        byte[] com = ConvertTobyte(command);
+                        WriteData(com);
+
+                        onofVal2 = true;
+                        dtVal2 = DateTime.Now;
+                    }
+                }
+                if (Val == "V3")
+                {
+                    if (onofVal3 == false)
+                    {
+                        string command = CreateCommandA1(true, mesg.Substring(8, 2));
+                        //MessageBox.Show(command);
+                        byte[] com = ConvertTobyte(command);
+                        WriteData(com);
+
+                        onofVal3 = true;
+                        dtVal3 = DateTime.Now;
+                    }
+                }
+                if (Val == "V4")
+                {
+                    if (onofVal4 == false)
+                    {
+                        string command = CreateCommandA1(true, mesg.Substring(8, 2));
+                        //MessageBox.Show(command);
+                        byte[] com = ConvertTobyte(command);
+                        WriteData(com);
+
+                        onofVal4 = true;
+                        dtVal4 = DateTime.Now;
+                    }
+                }
+                if (Val == "V5")
+                {
+                    if (onofVal5 == false)
+                    {
+                        string command = CreateCommandA1(true, mesg.Substring(8, 2));
+                        //MessageBox.Show(command);
+                        byte[] com = ConvertTobyte(command);
+                        WriteData(com);
+
+                        onofVal5 = true;
+                        dtVal5 = DateTime.Now;
+                    }
+                }
+            }
+            catch 
+            {
+                DisplayData(MessageType.Incoming, "Khong the gui lenh bat bom", tb);
+            }
+        }
+        public void AutoSendCanhBao()
+        {
+            try
+            {
+                Database mydatabase = new Database();
+                //string status = mydatabase.getStatusActor("B1");
+                float nhietdotb = mydatabase.SumTemp();
+                float doamtb = mydatabase.SumHumi();
+                float level = doamtb / (float)20 - (float)(27 - nhietdotb) / (float)10;
+                if (level > 4)
+                {
+                    string command = CreateCommandB1("M4");
+                    byte[] com1 = ConvertTobyte(command);
+                    WriteData(com1);
+                    mydatabase.DeleteData();
+                    DisplayData(MessageType.Incoming, "\r\n Gui canh bao muc 4 luc " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second, tb);
+                }
+                if ((2.5 < level) && (level < 4))
+                {
+                    string command = CreateCommandB1("M3");
+                    byte[] com = ConvertTobyte(command);
+                    WriteData(com);
+                    mydatabase.DeleteData();
+                    DisplayData(MessageType.Incoming, "\r\n Gui canh bao muc 3 luc " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second, tb);
+                }
+                if ((2 < level) && (level < 2.5))
+                {
+                    string command = CreateCommandB1("M2");
+                    byte[] com = ConvertTobyte(command);
+                    WriteData(com);
+                    mydatabase.DeleteData();
+                    DisplayData(MessageType.Incoming, "\r\n Gui canh bao muc 2 luc " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second, tb);
+                }
+                if (level < 2)
+                {
+                    string command = CreateCommandB1("M1");
+                    byte[] com = ConvertTobyte(command);
+                    WriteData(com);
+                    mydatabase.DeleteData();
+                    DisplayData(MessageType.Incoming, "\r\n Gui canh bao muc 1 luc " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second, tb);
+                }
+            }
+            catch
+            {
+                DisplayData(MessageType.Incoming, "Khong the gui muc canh bao", tb);
+            }
+        }
+        public void TrangThaiNode(string mesg)
+        {
+            try
+            {
+                Database mydatabase = new Database();
+                string ss = mesg.Substring(10, 2);
+                switch (ss)
+                {
+                    case "02":
+                        DisplayData(MessageType.Incoming, "Phat hien chay tai node co dia chi mang la: " + mesg.Substring(4, 4) + "(" + mesg.Substring(8, 2) + ") \r\n", tb);
+                        string command = CreateCommandB1("M5");
+                        byte[] com = ConvertTobyte(command);
+                        WriteData(com);
+                        string SDT = mydatabase.getPhoneNumber();
+                        string MAC = mesg.Substring(8, 2);//mydatabase.getMacSensor(mesg.Substring(4, 4));
+                        AutoSendSMS(SDT, MAC);
+                        break;
+                    case "03":
+                        DisplayData(MessageType.Incoming, "Het nang luong tai node co dia chi mang la: " + mesg.Substring(4, 4) + "(" + mesg.Substring(8, 2) + ") \r\n", tb);
+                        break;
+                    case "04":
+                        DisplayData(MessageType.Incoming, "Phat hien xam nhap tai node co dia chi mang la: " + mesg.Substring(4, 4) + "(" + mesg.Substring(8, 2) + ") \r\n", tb);
+                        break;
+                }
+            }
+            catch
+            {
+ 
+            }
+        }
+        public void ThongTinActor(string mesg)
+        {
+            try
+            {
+                Database mydatabase = new Database();
+                string ss1 = mesg.Substring(10, 2);
+                string mac_actor = mesg.Substring(8, 2);
+                int tt = int.Parse(ss1, System.Globalization.NumberStyles.HexNumber);
+                int vanbom = tt - 128;
+                if (tt > 128)
+                {
+                    if (vanbom == 15)
+                    {
+                        DisplayData(MessageType.Incoming, "Tat ca cac van da duoc bat thanh cong luc ! " + DateTime.Now, tb);
+                        mydatabase.setValOn();
+                    }
+                    else
+                    {
+                        if (mac_actor == "00")
+                        {
+                            DisplayData(MessageType.Incoming, "Van so " + vanbom.ToString() + " da duoc bat thanh cong luc ! " + DateTime.Now, tb);
+                            mydatabase.setStateVal(vanbom, "on");
+                        }
+                        if (mac_actor == "B1")
+                        {
+                            DisplayData(MessageType.Incoming, "Da bat canh cao muc " + vanbom.ToString() + " luc " + DateTime.Now, tb);
+                        }
+                    }
+                    showVanOn(vanbom,mac_actor,mytext);
+                }
+                else
+                {
+                    if (tt == 15)
+                    {
+                        DisplayData(MessageType.Incoming, "Tat ca cac van da tat thanh cong! " + DateTime.Now, tb);
+                        mydatabase.setValOff();
+                    }
+                    else
+                    {
+                        DisplayData(MessageType.Incoming, "Van so " + tt.ToString() + " da tat thanh cong! " + DateTime.Now, tb);
+                        mydatabase.setStateVal(tt, "off");
+                    }
+                    showVanOff(tt,mytext);
+                    if (tt == 1)
+                    { onofVal1 = false; }
+                    if (tt == 2)
+                    { onofVal2 = false; }
+                    if (tt == 3)
+                    { onofVal3 = false; }
+                    if (tt == 4)
+                    { onofVal4 = false; }
+                    if (tt == 5)
+                    { onofVal5 = false; }
+                    if (tt == 15)
+                    { onofVal1 = false; onofVal2 = false; onofVal3 = false; onofVal4 = false; onofVal5 = false; }
+                }
+            }
+            catch
+            {
+ 
+            }
+        }
+        public byte[] ConvertTobyte(string com)
+        {
+            byte[] command = new byte[4];
+            string nn1 = com.Substring(0, 2);
+            string nn2 = com.Substring(2, 2);
+            string ss = com.Substring(4, 2);
+            int kytu = Convert.ToInt16(com[7]);
+            int byte0 = int.Parse(nn1, System.Globalization.NumberStyles.HexNumber);
+            int byte1 = int.Parse(nn2, System.Globalization.NumberStyles.HexNumber);
+            int byte3 = int.Parse(ss, System.Globalization.NumberStyles.Integer);
+            int kq = 0;
+            if (com[6] == '0')
+            {
+                kq = byte3;
+            }
+            if (com[6] == '1')
+            {
+                kq = byte3 + 128;
+            }
+            command[0] = (byte)byte0;
+            command[1] = (byte)byte1;
+            command[2] = (byte)kq;
+            command[3] = (byte)kytu;
+            return command;
+        }
+
+        public string ConvertToString(byte[] com)
+        {
+            string mahex = "";
+            string mahexq = "";
+            string tuma = Encoding.ASCII.GetString(com, 0, 4);
+            string data = BitConverter.ToString(com, 4, com.Length - 4);
+            mahex = tuma + data;
+            for (int i = 0; i < mahex.Length; i++)
+            {
+                if (mahex[i] != '-')
+                {
+                    mahexq += mahex[i];
+                }
+            }
+
+            return mahexq;
+        }
+
+        public string CreateCommandA1(bool OnorOff, string mac)
+        {
+            Database mydatabase = new Database();
+            string command = "";
+            string Val = mydatabase.getVanSensor(mac);
+            command = mydatabase.getNetworkIpActor("00");
+            if (OnorOff == true) //lenh bat cac van
+            {
+                switch (Val)
+                {
+                    case "V1":
+                        command += "011$";
+                        break;
+                    case "V2":
+                        command += "021$";
+                        break;
+                    case "V3":
+                        command += "031$";
+                        break;
+                    case "V4":
+                        command += "041$";
+                        break;
+                    case "V5":
+                        command += "051$";
+                        break;
+                }
+            }
+            else        //gui lenh tat cac van
+            {
+                switch (Val)
+                {
+                    case "V1":
+                        command += "010$";
+                        break;
+                    case "V2":
+                        command += "020$";
+                        break;
+                    case "V3":
+                        command += "030$";
+                        break;
+                    case "V4":
+                        command += "040$";
+                        break;
+                    case "V5":
+                        command += "050$";
+                        break;
+                }
+            }
+            return command;
+        }
+
+        public string CreateCommandB1(string level)
+        {
+            Database mydatabase = new Database();
+            string command = "";
+            command = mydatabase.getNetworkIpActor("B1");
+            switch (level)
+            {
+                case "M1":
+                    command += "011$";
+                    break;
+                case "M2":
+                    command += "021$";
+                    break;
+                case "M3":
+                    command += "031$";
+                    break;
+                case "M4":
+                    command += "041$";
+                    break;
+                case "M5":
+                    command += "051$";
+                    break;
+            }
+            return command;
+        }
+
+        private void OpenSerialPort2()
+        {
+            comSMS.PortName = "COM4";
+            comSMS.BaudRate = 115200;
+            comPort.Parity = System.IO.Ports.Parity.None;
+            comSMS.StopBits = StopBits.One;
+            comSMS.DataBits = 8;
+            comSMS.Open();
+        }
+
+        private void AutoSendSMS(string sdt, string mac)
+        {
+            try
+            {
+                if (comSMS.IsOpen)
+                {
+                    comSMS.Write("AT+CMGS=" + sdt + "\r\n");
+                    comSMS.Write("Phat hien chay o sensor co dia chi mac la:" + mac + "\x1A");
+                    DisplayData(MessageType.Incoming, "\r\nGui tin nhan thanh cong", tb);
+                }
+                else
+                {
+                    OpenSerialPort2();
+                    comSMS.Write("AT+CMGS=" + sdt + "\r\n");
+                    comSMS.Write("Phat hien chay o sensor co dia chi mac la:" + mac + "\x1A");
+                    DisplayData(MessageType.Incoming, "\r\nGui tin nhan thanh cong", tb);
+                }
+            }
+            catch
+            {
+                DisplayData(MessageType.Error, "\r\nKhong the gui SMS", tb);
+            }
+        }
+
+        public void TimerInt()
+        {
+            timerTuoiCay.Enabled = true;
+            timerTuoiCay.Interval = 2000;
+            timerTuoiCay.Tick += new EventHandler(this.TuoiCayVal1);
+        }
+
+        public void TuoiCayVal1(object sender, EventArgs e)
+        {
+            count++;
+            count_BC++;
+            if (ping == true)
+            {
+                int timePing = timeout.Hour * 3600 + timeout.Minute * 60 + timeout.Second;
+                int nowPing = DateTime.Now.Hour * 3600 + DateTime.Now.Minute * 60 + DateTime.Now.Second;
+                if (nowPing - timePing > 30)
+                {
+                    Database mydabase = new Database();
+                    ping = false;
+                    DisplayData(MessageType.Incoming, "Timeout( "+ DateTime.Now +") :actor " + mac_ping + " da out khoi mang", tb);
+                    mydabase.setStatusActor(mac_ping,false);
+                    reload(pictureBox);
+                }
+            }
+            //
+            if (count_BC > 1800)
+            {
+                AutoSendCanhBao();
+                count_BC = 0;
+            }
+            //try
+            //{
+            //    comweb = getdata_from_server(uricom);
+            //    if (comweb != "")
+            //    {
+            //        DisplayData(MessageType.Incoming, comweb, tb);
+            //        byte[] commandWeb = ConvertTobyte(comweb);
+            //        WriteData(commandWeb);
+            //        comweb = "";
+            //    }
+            //}
+            //catch
+            //{
+            //    //DisplayData(MessageType.Error, "Khong the lay du lieu tu WEB", tb);
+            //}
+            if (onofVal1 == true)
+            {
+                try
+                {
+                    int timeVal1 = dtVal1.Hour * 3600 + dtVal1.Minute * 60 + dtVal1.Second;
+                    int now1 = DateTime.Now.Hour * 3600 + DateTime.Now.Minute * 60 + DateTime.Now.Second;
+                    if (now1 - timeVal1 >= 60)
+                    {
+                        //gui lenh tat van 1
+                        Database mydatabase = new Database();
+                        string command = mydatabase.getNetworkIpActor("00");
+
+                        command += "010$";
+                        byte[] com = ConvertTobyte(command);
+                        WriteData(com);
+
+                        onofVal1 = false;
+                    }
+                }
+                catch
+                {
+                    DisplayData(MessageType.Incoming, "Khong gui duoc lenh tat van so 1 " + DateTime.Now, tb);
+                }
+            }
+            if (onofVal2 == true)
+            {
+                try
+                {
+                    int timeVal2 = dtVal2.Hour * 3600 + dtVal2.Minute * 60 + dtVal2.Second;
+                    int now2 = DateTime.Now.Hour * 3600 + DateTime.Now.Minute * 60 + DateTime.Now.Second;
+                    if (now2 - timeVal2 >= 60)
+                    {
+                        //gui lenh tat van 2
+                        Database mydatabase = new Database();
+                        string command = mydatabase.getNetworkIpActor("00");
+
+                        command += "020$";
+                        byte[] com = ConvertTobyte(command);
+                        WriteData(com);
+
+                        onofVal2 = false;
+                    }
+                }
+                catch
+                {
+                    DisplayData(MessageType.Incoming, "Khong gui duoc lenh tat van so 2 " + DateTime.Now, tb);
+                }
+            }
+            if (onofVal3 == true)
+            {
+                try
+                {
+                    int timeVal3 = dtVal3.Hour * 3600 + dtVal3.Minute * 60 + dtVal3.Second;
+                    int now3 = DateTime.Now.Hour * 3600 + DateTime.Now.Minute * 60 + DateTime.Now.Second;
+                    if (now3 - timeVal3 >= 60)
+                    {
+                        //gui lenh tat van 3
+                        Database mydatabase = new Database();
+                        string command = mydatabase.getNetworkIpActor("00");
+
+                        command += "030$";
+                        byte[] com = ConvertTobyte(command);
+                        WriteData(com);
+
+                        onofVal3 = false;
+                    }
+                }
+                catch
+                {
+                    DisplayData(MessageType.Incoming, "Khong gui duoc lenh tat van so 3 " + DateTime.Now, tb);
+                }
+            }
+            if (onofVal4 == true)
+            {
+                try
+                {
+                    int timeVal4 = dtVal4.Hour * 3600 + dtVal4.Minute * 60 + dtVal4.Second;
+                    int now4 = DateTime.Now.Hour * 3600 + DateTime.Now.Minute * 60 + DateTime.Now.Second;
+                    if (now4 - timeVal4 >= 60)
+                    {
+                        //gui lenh tat van 4
+                        Database mydatabase = new Database();
+                        string command = mydatabase.getNetworkIpActor("00");
+
+                        command += "040$";
+                        byte[] com = ConvertTobyte(command);
+                        WriteData(com);
+
+                        onofVal4 = false;
+                    }
+                }
+                catch
+                {
+                    DisplayData(MessageType.Incoming, "Khong gui duoc lenh tat van so 4 " + DateTime.Now, tb);
+                }
+            }
+            if (onofVal5 == true)
+            {
+                try
+                {
+                    int timeVal5 = dtVal5.Hour * 3600 + dtVal5.Minute * 60 + dtVal5.Second;
+                    int now5 = DateTime.Now.Hour * 3600 + DateTime.Now.Minute * 60 + DateTime.Now.Second;
+                    if (now5 - timeVal5 >= 60)
+                    {
+                        //gui lenh tat van 5
+                        Database mydatabase = new Database();
+                        string command = mydatabase.getNetworkIpActor("00");
+
+                        command += "050$";
+                        byte[] com = ConvertTobyte(command);
+                        WriteData(com);
+
+                        onofVal5 = false;
+                    }
+                }
+                catch
+                {
+                    DisplayData(MessageType.Incoming, "Khong gui duoc lenh tat van so 5 " + DateTime.Now, tb);
+                }
+            }
+        }
+
+        public string getdata_from_server(string url)
+        {
+            try
+            {
+                // used to build entire input
+                StringBuilder sb = new StringBuilder();
+
+                // used on each read operation
+                byte[] buf = new byte[8192];
+
+                // prepare the web page we will be asking for
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                //keep alive
+                request.KeepAlive = true;
+
+                // execute the request
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+                    // we will read data via the response stream
+                    Stream resStream = response.GetResponseStream();
+
+                    string tempString = null;
+                    int count = 0;
+                    do
+                    {
+                        // fill the buffer with data
+                        count = resStream.Read(buf, 0, buf.Length);
+
+                        // make sure we read some data
+                        if (count != 0)
+                        {
+                            // translate from bytes to ASCII text
+                            tempString = Encoding.UTF8.GetString(buf, 0, count);
+
+                            // continue building the string
+                            sb.Append(tempString);
+                        }
+                    }
+                    while (count > 0); // any more data to read?
+                    // print out page source
+                    string data = sb.ToString();
+                    response.Close();
+                    if (data == "")
+                        return "";
+                    else
+                        return data;
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        public void showdata(string mac, string ip, float nhietdo, float doam, float nguon,TextBox text)
+        {
+            text.Invoke(new EventHandler(delegate
+                {
+                    if (index == 2)
+                    {
+                        text.Text = "Sensor " + ip + "(" + mac + ")\r\nNhiet do : " + nhietdo + "\r\nDo am : " + doam + "\r\nNang luong : " + nguon;
+                        mypanel.Show();
+                    }
+                }));
+        }
+        public void showVanOn(int val,string mac, TextBox text)
+        {
+            text.Invoke(new EventHandler(delegate
+            {
+                if (index == 2)
+                {
+                    if (mac == "00")
+                    {
+                        if (val == 15)
+                        {
+                            text.Text = "\r\nTat ca cac van duoc bat thanh cong";
+                        }
+                        else
+                        {
+                            text.Text = "\r\nVan so " + val + " da duoc bat thanh cong";
+                        }
+                    }
+                    else
+                    {
+                        text.Text = "\r\nDa bat canh bao muc " + val ;
+                    }
+                    mypanel.Show();
+                }
+            }));
+        }
+        public void showVanOff(int val, TextBox text)
+        {
+            text.Invoke(new EventHandler(delegate
+            {
+                if (index == 2)
+                {
+                    if (val == 15)
+                    {
+                        text.Text = "\r\nTat ca cac van duoc tat thanh cong";
+                    }
+                    else
+                    {
+                        text.Text = "\r\nVan so " + val + " da duoc tat thanh cong";
+                    }
+                    mypanel.Show();
+                }
+            }));
+        }
+
+        #region Draw Map
+        public void DrawSensor(string mac)
+        {
+            try
+            {
+                Database myDatabase = new Database();
+                Bitmap icon_true;
+                Bitmap icon_false;
+                string path_icon_sensor_true;
+                string path_icon_sensor_false;
+                try
+                {
+                    path_icon_sensor_true = Directory.GetCurrentDirectory().ToString() + @"\red.png";
+                    path_icon_sensor_false = Directory.GetCurrentDirectory().ToString() + @"\violet.png";
+                }
+                catch
+                {
+                        path_icon_sensor_true = @"\Storage Card\hieu54\red.png";
+                        path_icon_sensor_false = @"\Storage Card\hieu54\violet.png";
+                }
+                int pixel_x = Convert.ToInt32(myDatabase.getSensorPixel_x(mac));
+                int pixel_y = Convert.ToInt32(myDatabase.getSensorPixel_y(mac));
+                icon_true = new Bitmap(path_icon_sensor_true);
+                icon_false = new Bitmap(path_icon_sensor_false);
+                string status = myDatabase.getStatusSensor(mac);
+                if (status == "true" || status == "True")
+                {
+                    gr.DrawImage(icon_true, pixel_x, pixel_y);
+                }
+                else
+                {
+                    gr.DrawImage(icon_false, pixel_x, pixel_y);
+                }
+                gr.DrawString(mac, draw_font, draw_brush, pixel_x, pixel_y);
+            }
+            catch
+            {}
+        }
+
+        public void DrawActor(string mac)
+        {
+            try
+            {
+                Database myDatabase = new Database();
+                Bitmap icon_true;
+                Bitmap icon_false;
+                string path_icon_actor_true;
+                string path_icon_actor_false;
+                try
+                {
+                    path_icon_actor_true = Directory.GetCurrentDirectory().ToString() + @"\green.png";
+                    path_icon_actor_false = Directory.GetCurrentDirectory().ToString() + @"\violet.png";
+                }
+                catch
+                {
+                    path_icon_actor_true = @"\Storage Card\hieu54\blue.png";
+                    path_icon_actor_false = @"\Storage Card\hieu54\violet.png";
+                }
+                int pixel_x = Convert.ToInt32(myDatabase.getActorPixel_x(mac));
+                int pixel_y = Convert.ToInt32(myDatabase.getActorPixel_y(mac));
+                icon_true = new Bitmap(path_icon_actor_true);
+                icon_false = new Bitmap(path_icon_actor_false);
+                string status = myDatabase.getStatusActor(mac);
+                if (status == "true" || status == "True")
+                {
+                    gr.DrawImage(icon_true, pixel_x, pixel_y);
+                }
+                else
+                {
+                    gr.DrawImage(icon_false, pixel_x, pixel_y);
+                }
+                gr.DrawString(mac, draw_font, draw_brush, pixel_x, pixel_y);
+            }
+            catch
+            {
+            }
+        }
+
+        public void DrawVan(int id)
+        {
+            try
+            {
+                Database myDatabase = new Database();
+                Bitmap icon_on;
+                Bitmap icon_off;
+                string path_icon_val_on;
+                string path_icon_val_off;
+                try
+                {
+                    path_icon_val_on = Directory.GetCurrentDirectory().ToString() + @"\yellow.png";
+                    path_icon_val_off = Directory.GetCurrentDirectory().ToString() + @"\grey.png";
+                }
+                catch
+                {
+
+                        path_icon_val_on = @"\Storage Card\hieu54\yellow.png";
+                        path_icon_val_off = @"\Storage Card\hieu54\grey.png";
+
+                }
+                int pixel_x = Convert.ToInt32(myDatabase.getValPixel_x(id));
+                int pixel_y = Convert.ToInt32(myDatabase.getValPixel_y(id));
+                icon_on = new Bitmap(path_icon_val_on);
+                icon_off = new Bitmap(path_icon_val_off);
+                string status = myDatabase.getStateVal(id);
+                if (status == "on")
+                {
+                    gr.DrawImage(icon_on, pixel_x, pixel_y);
+                }
+                else
+                {
+                    gr.DrawImage(icon_off, pixel_x, pixel_y);
+                }
+                gr.DrawString("V" + id, draw_font, draw_brush, pixel_x, pixel_y);
+            }
+            catch
+            {}
+        }
+        public void reload(PictureBox pic)
+        {
+                pic.Invoke(new EventHandler(delegate
+                    {
+                        try
+                        {
+                            Database myDatabase = new Database();
+                            string path;
+                            try
+                            {
+                                path = Directory.GetCurrentDirectory().ToString() + @"\bando.png";
+                            }
+                            catch
+                            {
+                                 path = @"\Storage Card\hieu54\bando.png";
+                            }
+                            Bitmap image = new Bitmap(path);
+                            gr.DrawImage(image, 0, 0);
+                            XmlNodeList node = (myDatabase.xml).GetElementsByTagName("node");
+                            foreach (XmlNode nodechild in node)
+                            {
+                                string mac = nodechild.Attributes["mac"].Value;
+                                if (mac == "00" || mac[0] == 'B')
+                                {
+                                    DrawActor(mac);
+                                }
+                                else
+                                {
+                                    DrawSensor(mac);
+                                }
+                            }
+                            XmlNodeList val = (myDatabase.xml).GetElementsByTagName("val");
+                            foreach (XmlNode valchild in val)
+                            {
+                                int id = Int32.Parse(valchild.Attributes["id"].Value);
+                                DrawVan(id);
+                            }
+                            pictureBox.Image = bit;
+                            pictureBox.Refresh();
+                        }
+                        catch
+                        {
+                            DisplayData(MessageType.Error, "Khong the load anh tu CSDL", tb);
+                        }
+                    }));
+        }
+
+        #endregion
+        public void ThreadRequest()
+        {
+            threadRequest = new Thread(new ThreadStart(Request));
+            threadRequest.Start();
+        }
+        public void Request()
+        {
+            try
+            {
+                while (true)
+                {
+                    comweb = getdata_from_server(uricom);
+                    if (comweb != "")
+                    {
+                        DisplayData(MessageType.Incoming, comweb, tb);
+                        byte[] commandWeb = ConvertTobyte(comweb);
+                        WriteData(commandWeb);
+                        comweb = "";
+                    }
+                    Thread.Sleep(1000);
+                }
+            }
+            catch
+            {
+                //DisplayData(MessageType.Error, "Khong the lay du lieu tu WEB", tb);
+            }
+        }
+    }
+}

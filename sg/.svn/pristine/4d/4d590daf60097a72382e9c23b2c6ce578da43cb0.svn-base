@@ -1,0 +1,27 @@
+<?
+$connect =mysql_pconnect('localhost','root','')or die("ko ket noi dc");//ket noi sql
+$connect =mysql_select_db('ws')or die("ko co cai nay");
+mysql_query("SETNAME 'UTF8'");
+$mama=$_GET['id'];
+
+?>
+<html>
+  <head>
+
+  </head>
+  <body>
+  <?
+  
+
+  if($mama==1)
+  {
+    mysql_query("UPDATE kiemtra SET trangthai = 'bat' WHERE ID = '1'");   
+   }
+  
+   else
+   {echo("khong nhan duoc");
+
+   }
+   ?>
+  </body>
+</html>

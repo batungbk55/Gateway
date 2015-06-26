@@ -1,0 +1,14 @@
+<?php
+require 'dbconnect.php';
+$lat1 = $_POST['lat1'];
+$lon1 = $_POST['lon1'];
+$lat2 = $_POST['lat2'];
+$lon2 = $_POST['lon2'];
+if (gettype($lat1)=="double" && gettype($lon1)=="double" && gettype($lat2)=="double" && gettype($lon2)=="double"){
+	$kq = "Da luu thay doi";
+}
+else {
+	$kq = "Nhap sai dinh dang. De nghi nhap lai";
+}
+echo $lat1;
+?>

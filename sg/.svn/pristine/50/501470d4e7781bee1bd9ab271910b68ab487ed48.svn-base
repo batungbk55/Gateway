@@ -1,0 +1,95 @@
+<?php
+require 'dbconnect.php';
+$macn = $_POST['mac'];
+$latn = $_POST['lat'];
+$lonn = $_POST['lon'];
+$catn = $_POST['cat'];
+$flat=0;
+$sql1 ="SELECT * FROM toado WHERE id=1";
+$query1 = mysql_query($sql1);
+$row1 = mysql_fetch_array($query1);
+$vd1 = $row1['lat'];
+$kd1 = $row1['lon'];
+$sql2 ="SELECT * FROM toado WHERE id=2";
+$query2 = mysql_query($sql2);
+$row2 = mysql_fetch_array($query2);
+$vd2 = $row2['lat'];
+$kd2 = $row2['lon'];
+
+if ($vd1>$vd2){	
+	$x1 = $vd1;	
+	$x2 = $vd2;
+}
+else{	
+	$x1 = $vd2;	
+	$x2 = $vd1;
+}
+if ($kd1<$kd2){	
+	$y1 = $kd1;	
+	$y2 = $kd2;
+}
+else {
+	$y1 = $kd2;	
+	$y2 = $kd1;
+}
+$deltax = $x1 - $x2;
+$deltay = $y2 - $y1;
+
+
+$dodaiy = 980;
+$dodaix = ($dodaiy*$deltax)/$deltay;
+
+if($latn>$x1 || $latn<$x2){
+	$kq="lat";
+}
+else{
+	if($lonn>$y2 || $lonn<$y1){
+		$kq="lon";
+	}
+	else $flat=1;
+}
+
+if($flat==1){
+	$kcx = $x1 - $latn;
+	$kcx = ($kcx*$dodaix)/$deltax;
+	$kcx = (int)$kcx;
+	
+	$kcy = $lonn-$y1;
+	$kcy = ($kcy*$dodaiy)/$deltay;
+	$kcy = (int)$kcy;
+	
+	if($catn=="val"){
+		$id = substr($macn, 1,1);
+		$sql5 = "SELECT * FROM val WHERE id='".$id."'";
+		$query5 = mysql_query($sql5);
+		if(!mysql_fetch_array($query5)){
+			if($id>=1 && $id<=5){
+				$sql6 = "INSERT INTO val(id,lat,lon,px,py,actor) VALUES ('".$id."','".$latn."','".$lonn."','".$kcx."','".$kcy."','A1')";
+				$query6 = mysql_query($sql6);
+				$kq="ok";
+			}
+			else {
+				$sql7 = "INSERT INTO val(id,lat,lon,px,py,actor) VALUES ('".$id."','".$latn."','".$lonn."','".$kcx."','".$kcy."','A2')";
+				$query7 = mysql_query($sql7);
+				$kq="ok";
+			}
+		}
+		else{
+			echo "val";
+		}
+	}
+	else{
+		$sql4 = "SELECT * FROM node WHERE mac='".$macn."'";
+		$query4=mysql_query($sql4);
+		if(!mysql_fetch_array($query4)){
+			$sql3 = "INSERT INTO node(mac,lat,lon,px,py,node_cat) VALUES ('".$macn."','".$latn."','".$lonn."','".$kcx."','".$kcy."','".$catn."')";
+			$query3 = mysql_query($sql3);
+			$kq="ok";
+		}
+		else{
+			echo "mac";
+		}
+	}	
+}
+echo $kq;
+?>

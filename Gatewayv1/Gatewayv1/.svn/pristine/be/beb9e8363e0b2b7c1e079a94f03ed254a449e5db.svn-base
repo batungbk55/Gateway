@@ -1,0 +1,229 @@
+﻿using System;
+using System.Windows.Forms;
+using System.Xml;
+using System.Threading;
+
+namespace Emboard
+{
+    public partial class Emboard : Form
+    {
+        libCOM comPort = new libCOM();
+
+        #region Variable Command
+        private string command;
+        private string network_ip;
+        private string mac;
+        private byte[] commandbyte;
+        #endregion
+
+        private void btConnect_Click(object sender, EventArgs e)
+        {
+            SetDefalut();
+            try
+            {
+                comPort.OpenPort();
+                if (comPort.OpenPort() == -1)
+                {
+                    tbShow.Text += "Connecting...\r\n";
+                }
+                else
+                {
+                    btConnect.Enabled = false;
+                    btSend.Enabled = true;
+                    cbnode.Enabled = true;
+                    cbMalenh.Enabled = true;
+                    btDisconnect.Enabled = true;
+                    btexit.Enabled = true;
+                    tbShow.Text += "COM port opened at " + DateTime.Now + "\r\n";
+                    tbShow.SelectionStart = tbShow.Text.Length;
+                    tbShow.ScrollToCaret();
+                }
+                comPort.ThreadRequest();
+            }
+            catch
+            {
+            }
+        }
+
+        private void btSend_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Database myDatabase = new Database();
+                if (cbMalenh.SelectedIndex == 0)
+                {
+                    mac = cbnode.Text.Substring(7, 2);
+                    network_ip = myDatabase.getNetworkIpSensor(mac);
+                    command = network_ip + "000$";
+                }
+                else
+                {
+                    mac = cbnode.Text.Substring(6, 2);
+                    network_ip = myDatabase.getNetworkIpActor(mac);
+                    switch (cbMalenh.SelectedIndex)
+                    {
+                        case 1:
+                            command = network_ip + "011$";
+                            break;
+                        case 2:
+                            command = network_ip + "021$";
+                            break;
+                        case 3:
+                            command = network_ip + "031$";
+                            break;
+                        case 4:
+                            command = network_ip + "041$";
+                            break;
+                        case 5:
+                            command = network_ip + "051$";
+                            break;
+                        case 6:
+                            command = network_ip + "151$";
+                            break;
+                        case 7:
+                            command = network_ip + "010$";
+                            break;
+                        case 8:
+                            command = network_ip + "020$";
+                            break;
+                        case 9:
+                            command = network_ip + "030$";
+                            break;
+                        case 10:
+                            command = network_ip + "040$";
+                            break;
+                        case 11:
+                            command = network_ip + "050$";
+                            break;
+                        case 12:
+                            command = network_ip + "150$";
+                            break;
+                        case 13:
+                            command = network_ip + "FFF$";
+                            break;
+                    }
+                }
+                if (command.Length == 8)
+                {
+                    tbShow.Text += "\r\nCommand " + command  +" sent at "+ DateTime.Now+ "\r\n";
+                    tbShow.SelectionStart = tbShow.Text.Length;
+                    tbShow.ScrollToCaret();
+                    if (command[4] == 'F')
+                    {
+                        byte[] ping_actor = new byte[4];
+                        /*string nn1 = command.Substring(0, 2);
+                        string nn2 = command.Substring(2, 2);
+                        int byte0 = int.Parse(nn1, System.Globalization.NumberStyles.HexNumber);
+                        int byte1 = int.Parse(nn2, System.Globalization.NumberStyles.HexNumber);
+                        ping_actor[0] = (byte)byte0;
+                        ping_actor[1] = (byte)byte1;*/
+                        ping_actor[0] = 48;
+                        ping_actor[1] = 48;
+                        ping_actor[2] = 255;
+                        ping_actor[3] = 36;
+                        comPort.WriteData(ping_actor);
+                        comPort.ping = true;
+                        comPort.mac_ping = mac;
+                        comPort.timeout = DateTime.Now;
+                    }
+                    else
+                    {
+                        commandbyte = comPort.ConvertTobyte(command);
+                        comPort.WriteData(commandbyte);
+                    }
+                    cbMalenh.SelectedIndex = -1;
+                    cbnode.Items.Clear();
+                    cbnode.Text = "";
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Ban chua chon du thong tin o Commnad hoac Node", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
+                return;
+            }
+        }
+
+        private void btDisconnect_Click(object sender, EventArgs e)
+        {
+            comPort.comPort.DiscardInBuffer();
+            comPort.COMClose();
+            btConnect.Enabled = true;
+            btDisconnect.Enabled = false;
+            cbMalenh.Enabled = false;
+            cbnode.Enabled = false;
+            btSend.Enabled = false;
+            comPort.threadRequest.Abort();
+        }
+
+
+        private void cbMalenh_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                int index_malenh = cbMalenh.SelectedIndex;
+                if (index_malenh == 0)
+                {
+                    cbnode.Items.Clear();
+                    Database my_Database = new Database();
+                    XmlNodeList nodeSensor = ((XmlElement)my_Database.sensor).GetElementsByTagName("node");
+                    foreach (XmlNode node in nodeSensor)
+                    {
+                        if (node.Attributes["status"].Value == "true" || node.Attributes["status"].Value == "True")
+                        {
+                            string str = "Sensor " + node.Attributes["mac"].Value;
+                            cbnode.Items.Add(str);
+                        }
+                    }
+                }
+                else
+                {
+                    cbnode.Items.Clear();
+                    Database my_Database = new Database();
+                    XmlNodeList nodeActor = ((XmlElement)my_Database.actor).GetElementsByTagName("node");
+                    foreach (XmlNode node in nodeActor)
+                    {
+                        if (node.Attributes["status"].Value == "true" || node.Attributes["status"].Value == "True")
+                        {
+                            string str = "Actor " + node.Attributes["mac"].Value;
+                            cbnode.Items.Add(str);
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+        private void btexit_Click(object sender, EventArgs e)
+        {
+                byte[] sleep = new byte[4];
+                sleep[0] = 255;
+                sleep[1] = 255;
+                sleep[2] = 1;
+                sleep[3] = 36;
+                comPort.WriteData(sleep);
+                tbShow.Text += "\r\nGui lenh dong bo thoi gian ngu cua cac sensor\r\n";
+                tbShow.SelectionStart = tbShow.Text.Length;
+                tbShow.ScrollToCaret();
+        }
+        private delegate void UpdateStatusCallback(string strMessage);
+        private void Update(String str)
+        {
+            tbShow.Text += str + "\r\n";
+            tbShow.ScrollToCaret();
+        }
+        private void Emboard_Closed(object sender, System.EventArgs e)
+        {
+            comPort.threadRequest.Abort();
+        }
+        #region SetDefalut
+        private void SetDefalut()
+        {
+            comPort._portName = "COM2";
+            comPort._baudRate = "19200";
+            comPort._parity = "None";
+            comPort._stopbits = "One";
+            comPort._databits = "8";
+            comPort.tb = tbShow;
+        }
+        #endregion
+    }
+}

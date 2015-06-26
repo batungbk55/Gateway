@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Heaven 1</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="style.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+#header {
+	background:#6E8B3D;
+	width:980px;
+	height:200px;
+	margin: 10px;
+} 
+#top_login{
+	height: 50px;
+}
+#login .log3{
+	border-bottom: solid 1px #b0bb88;
+	font-size: 40px;
+	display: block;
+	font: bold 30px Comfortaa;
+	padding-bottom: 10px;
+	color: #212713;
+}
+#bottom_login{
+	height: 100px;
+}
+button {
+	cursor: pointer;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 10px;
+	padding: 5px 10px 5px 10px;
+	font-weight: bold;
+}
+.log1{
+	width: 140px;
+	padding : 7px 7px 10px 7px;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+.log2 input{
+	width: 200px;
+	padding: 2px;
+	margin-bottom: 10px;
+}
+#fail_alert{
+	padding: 5px 10px 20px 10px;
+	font-weight: bold;
+	font-size: 20px;
+}
+#username_alert,#password_alert{
+	padding : 7px 7px 15px 7px;
+	font-weight: normal;
+	margin-bottom: 10px;
+}
+</style>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript">
+function createRequestObject(){
+	var ro;
+	var browser = navigator.appName;
+	if(browser == "Microsoft Internet Explorer"){
+    	ro = new ActiveXObject("Microsoft.XMLHTTP");
+	}else{
+    	ro = new XMLHttpRequest();
+	}
+	return ro;
+}
+
+var http = createRequestObject();
+function check_db(username,password){ 
+	http.open('get', 'check_login.php?u='+username+'&p='+password);
+	http.onreadystatechange = handleResponse;
+	http.send(null);
+}
+
+function handleResponse() {
+	if(http.readyState == 4){
+  		var response = http.responseText;
+  		if(response=='false'){
+  	  		document.getElementById('fail_alert').innerHTML="Đăng nhập thất bại. Vui lòng thử lại";
+  	  		document.getElementById('username').value = "";
+  	  		document.getElementById('password').value = "";
+  	  	}
+  		else if(response=='true'){
+  			document.getElementById('fail_alert').innerHTML="Đăng nhập thành công!";
+  			window.history.back(-1);
+  	  	}
+  	}
+}
+
+function check_login(){
+	var user_name=document.getElementById('username').value;
+	var pass_word=document.getElementById('password').value;
+	if(user_name=="" && pass_word==""){
+		document.getElementById('username_alert').innerHTML="Trường này không thể để trống";
+		document.getElementById('password_alert').innerHTML="Trường này không thể để trống";
+		return;
+	}
+	else if(pass_word==""){
+		document.getElementById('username_alert').innerHTML="";
+		document.getElementById('password_alert').innerHTML="Trường này không thể để trống";
+		return;
+	}
+	else if(user_name=="" ){
+		document.getElementById('password_alert').innerHTML="";
+		document.getElementById('username_alert').innerHTML="Trường này không thể để trống";
+		return;
+	}
+	else{
+		check_db(user_name,pass_word);
+	}
+}
+</script>
+</head>
+
+<body>
+<div id="wrap">
+  	<div id="top">
+	    <h1 id="sitename">Sigate <em>WSAN</em> LAb 411</h1>
+  	</div>
+  
+	<div id="menu">
+		<ul>
+	    	<li><a href="index.php"><span>Home</span></a></li>
+	      	<li><a href="map.php"><span>Map</span></a></li>
+	      	<li><a href="gateway.html"><span>Gateway</span></a></li>
+	      	<li><a href="video.php"><span>Video</span></a></li>
+	      	<li><a href="manage.php"><span>Manage</span></a></li>
+	   	</ul>
+	</div>
+  	<div id="contentwrap">
+    <div id="header"> 
+    </div>
+    <div id="mainpage">
+<center>	
+	<div id="login">
+		<div class="log3">Đăng nhập</div>
+		<div id="top_login"></div>	
+		<span id="fail_alert"></span><br />
+		<table>
+		<tr>
+			<td class="log1">Tên đăng nhập:</td>
+			<td class="log2"><input id="username" type="text"/></td>
+			<td id="username_alert"></td>
+		</tr>
+		<tr>
+			<td class="log1">Mật khẩu:</td>
+			<td class="log2"><input id="password" type="password" onKeydown="if(event.keyCode==13){check_login();}"/></td>
+			<td id="password_alert"></td>
+		</tr>
+		</table>
+		<button onclick="check_login();">Đăng nhập</button>	
+	</div>
+	<div id="bottom_login"></div>
+</center>
+    </div>
+    
+	<div id="bottom">
+		<div id="footer">
+	        <div id="fl_left">&copy; YourSitename.com | All Rights Reserved</div>
+	        <div id="fl_right"><a href="http://www.websitetemplateco.com/">Free CSS Templates</a> by <a href="http://cssheaven.org">CSS Heaven</a></div>
+	        <div class="clear"></div>
+		</div>
+    </div>
+	</div>
+	<div id="contentbtm"></div>
+</div>
+</body>
+</html>

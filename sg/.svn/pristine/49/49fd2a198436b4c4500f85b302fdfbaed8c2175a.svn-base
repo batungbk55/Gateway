@@ -1,0 +1,5 @@
+@echo on
+cd C:\Program Files (x86)\VideoLAN\VLC
+vlc -vvv "http://192.168.0.123:1234" --sout=#transcode{vcodec=mp2v,vb="352",vfilter=croppadd{cropttop=20,cropbottom=30,paddleft=100}}:standard{access=file,mux=ts,dst="C:\xampp\htdocs\vlc2\video\thanghien.mpg"} --run-time 29 vlc://quit
+
+exit

@@ -1,0 +1,7 @@
+<?php
+require 'dbconnect.php';
+$mac = $_POST['m'];
+$sql="DELETE FROM node WHERE mac='".$mac."'";
+$query = mysql_query($sql);
+echo "Đã xóa node ".$mac." !";
+?>

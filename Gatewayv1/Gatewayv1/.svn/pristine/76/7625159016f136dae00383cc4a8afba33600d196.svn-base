@@ -1,0 +1,246 @@
+﻿using System;
+using System.Windows.Forms;
+using System.Xml;
+using System.Threading;
+
+namespace Emboard
+{
+    public partial class Emboard : Form
+    {
+        #region object
+        libCOM comPort = new libCOM();
+        #endregion
+        #region Variable Command
+        private string command;
+        private string network_ip;
+        private string mac;
+        private byte[] commandbyte;
+        #endregion
+
+        private void btConnect_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Database myDatabase = new Database();
+                comPort.Time_alarm = myDatabase.getTimeAlarm();
+                comPort.Time_control = myDatabase.getTimeActor();
+                comPort.tb = tbShow;
+                int checkCom = comPort.OpenPort("COM2",19200,"None","One",8);
+                if (checkCom == -1)
+                {
+                    tbShow.Text += "Connecting...\r\n";
+                }
+                else
+                {
+                    btConnect.Enabled = false;
+                    btSend.Enabled = true;
+                    cbnode.Enabled = true;
+                    cbMalenh.Enabled = true;
+                    btDisconnect.Enabled = true;
+                   // btexit.Enabled = true;
+                    tbShow.Text += "(" + DateTime.Now + "): Da mo cong COM\r\n";
+                    tbShow.SelectionStart = tbShow.Text.Length;
+                    tbShow.ScrollToCaret();
+                }
+                comPort.ThreadRequest();
+                comPort.ThreadSend();
+            }
+            catch
+            {
+            }
+        }
+
+        private void btSend_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Database myDatabase = new Database();
+                if (cbMalenh.SelectedIndex == 0)
+                {
+                    mac = cbnode.Text.Substring(7, 2);
+                    if (mac[0] == '0')
+                    {
+                        network_ip = myDatabase.getNetworkIpSensor(mac);
+                    }
+                    else
+                    {
+                        network_ip = myDatabase.getNetworkIpSensorBC(mac);
+                    }
+                    command = network_ip + "000$";
+                    tbShow.Text += "(" + DateTime.Now + "): Gui lenh lay du lieu sensor:\r\n Ma lenh : " + command + "\r\n";
+                    tbShow.SelectionStart = tbShow.Text.Length;
+                    tbShow.ScrollToCaret();
+                }
+                else
+                {
+                    mac = cbnode.Text.Substring(6, 2);
+                    network_ip = myDatabase.getNetworkIpActor(mac);
+                    switch (cbMalenh.SelectedIndex)
+                    {
+                        case 1:
+                            command = network_ip + "011$";
+                            break;
+                        case 2:
+                            command = network_ip + "021$";
+                            break;
+                        case 3:
+                            command = network_ip + "031$";
+                            break;
+                        case 4:
+                            command = network_ip + "041$";
+                            break;
+                        case 5:
+                            command = network_ip + "051$";
+                            break;
+                        case 6:
+                            command = network_ip + "061$";
+                            break;
+                        case 7:
+                            command = network_ip + "151$";
+                            break;
+                        case 8:
+                            command = network_ip + "010$";
+                            break;
+                        case 9:
+                            command = network_ip + "020$";
+                            break;
+                        case 10:
+                            command = network_ip + "030$";
+                            break;
+                        case 11:
+                            command = network_ip + "040$";
+                            break;
+                        case 12:
+                            command = network_ip + "050$";
+                            break;
+                        case 13:
+                            command = network_ip + "060$";
+                            break;
+                        case 14:
+                            command = network_ip + "150$";
+                            break;
+                    }
+                    tbShow.Text += "(" + DateTime.Now + "): Gui lenh dieu khien actor:\r\nMa lenh : " + command + "\r\n";
+                    tbShow.SelectionStart = tbShow.Text.Length;
+                    tbShow.ScrollToCaret();
+                }
+                if (command.Length == 8)
+                {
+                    commandbyte = comPort.ConvertTobyte(command);
+                    comPort.WriteData(commandbyte);
+                    cbMalenh.SelectedIndex = -1;
+                    cbnode.Items.Clear();
+                    cbnode.Text = "";
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Ban chua chon du thong tin o Commnad hoac Node", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
+                return;
+            }
+        }
+
+        private void btDisconnect_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                try
+                {
+                    comPort.comPort.DiscardInBuffer();
+                    comPort.comPort.DiscardNull = true;
+                }
+                catch { }
+                comPort.COMClose();
+                btConnect.Enabled = true;
+                btDisconnect.Enabled = false;
+                cbMalenh.Enabled = false;
+                cbnode.Enabled = false;
+                btSend.Enabled = false;
+                comPort.threadRequest.Abort();
+                comPort.threadSend.Abort();
+                send.Abort();
+            }
+            catch { }
+        }
+
+
+        private void cbMalenh_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                int index_malenh = cbMalenh.SelectedIndex;
+                if (index_malenh == 0)
+                {
+                    cbnode.Items.Clear();
+                    Database my_Database = new Database();
+                    //Hien thi danh sach sensor khu vuon lan
+                    XmlNodeList nodeSensor = ((XmlElement)my_Database.sensor).GetElementsByTagName("node");
+                    foreach (XmlNode node in nodeSensor)
+                    {
+                        if (node.Attributes["status"].Value == "true" || node.Attributes["status"].Value == "True")
+                        {
+                            string str = "Sensor " + node.Attributes["mac"].Value;
+                            cbnode.Items.Add(str);
+                        }
+                    }
+                    //Hien thi sensor khu bao chay
+                    XmlNodeList nodeSensor_BC = ((XmlElement)my_Database.sensor_bc).GetElementsByTagName("node");
+                    foreach (XmlNode node_BC in nodeSensor_BC)
+                    {
+                        if (node_BC.Attributes["status"].Value == "true" || node_BC.Attributes["status"].Value == "True")
+                        {
+                            string str = "Sensor " + node_BC.Attributes["mac"].Value;
+                            cbnode.Items.Add(str);
+                        }
+                    }
+                }
+                else
+                {
+                    cbnode.Items.Clear();
+                    Database my_Database = new Database();
+                    XmlNodeList nodeActor = ((XmlElement)my_Database.actor).GetElementsByTagName("node");
+                    foreach (XmlNode node in nodeActor)
+                    {
+                        if (node.Attributes["status"].Value == "true" || node.Attributes["status"].Value == "True")
+                        {
+                            string str = "Actor " + node.Attributes["mac"].Value;
+                            cbnode.Items.Add(str);
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+        private void btexit_Click(object sender, EventArgs e)
+        {
+                try
+                {
+                    comPort.threadRequest.Abort();
+                    comPort.threadSend.Abort();
+                    comPort.comPort.DiscardInBuffer();
+                    comPort.comPort.DiscardNull = true;
+                }
+                catch { }
+                finally
+                {
+                    this.Close();
+                }
+        }
+        private void Emboard_Closed(object sender, System.EventArgs e)
+        {
+            try
+            {
+                try
+                {
+                    comPort.comPort.DiscardInBuffer();
+                    comPort.comPort.DiscardNull = true;
+                }
+                catch { }
+                comPort.threadRequest.Abort();
+                comPort.threadSend.Abort();
+                send.Abort();
+            }
+            catch { }
+        }
+    }
+}

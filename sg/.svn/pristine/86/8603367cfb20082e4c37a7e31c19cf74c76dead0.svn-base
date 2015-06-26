@@ -1,0 +1,20 @@
+<?php
+include("dbconnect.php");
+$u = $_GET['u'];
+$p = $_GET['p'];
+$response="false";
+$statement="Select level from user WHERE user_name='".$u."' and password='".$p."'";
+$result=mysql_query($statement);
+if (!$result) {
+	echo $response;
+}
+else{
+	while($row=mysql_fetch_row($result)){
+		$response="true";
+		session_start();
+		$_SESSION['login_status'] ='yes';
+		$_SESSION['level'] = $row[0]; 
+	}
+}
+echo $response;
+?>

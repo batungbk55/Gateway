@@ -1,0 +1,9 @@
+<?php
+
+$connect =mysql_pconnect('localhost','root','')or die("ko ket noi dc");//ket noi sql
+$connect =mysql_select_db('ws')or die("ko co cai nay");
+mysql_query("SETNAME 'UTF8'");
+
+   mysql_query("UPDATE kiemtra SET trangthai = 'tat' WHERE ID = '1'"); 
+
+?>

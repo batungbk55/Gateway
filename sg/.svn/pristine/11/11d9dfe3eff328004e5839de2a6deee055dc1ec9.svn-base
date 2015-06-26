@@ -1,0 +1,29 @@
+<table>
+<tr>
+<td class="add1">Node category:</td>
+<td><select id="catn">
+<option value="">--Chọn node mạng--</option>
+<option value="sensor">Sensor</option>
+<option value="actor">Actor</option>
+<option value="val">Val</option>
+</select>
+</td>
+<td class="alert"><span id="cat_alert"></span></td>
+</tr>
+<tr>
+<td class="add1">Node ID (MAC/Val):</td>
+<td><input id="macn" type="text"></td>
+<td class="alert"><span id="mac_alert"></span></td>
+</tr>
+<tr>
+<td class="add1">Lattitude:</td>
+<td><input id="latn" type="text"></td>
+<td class="alert"><span id="lat_alert"></span></td>
+</tr>
+<tr>
+<td class="add1">Longtitude:</td>
+<td><input id="lonn" type="text"></td>
+<td class="alert"><span id="lon_alert"></span></td>
+</tr>
+</table>
+<button onclick="addnode()" id="b_create">Create</button>

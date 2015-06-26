@@ -1,0 +1,94 @@
+@charset "utf-8";
+/* CSS Document */
+#log5,#log6{
+	border-bottom: solid 1px #b0bb88;
+	display: block;
+	font: bold 21px Comfortaa;
+	padding-bottom: 10px;
+	color: #212713;
+	margin-top: 50px;
+	cursor: pointer;
+	text-decoration: underline;
+}
+#mainpage{
+
+	width:960px;
+	margin:10px;
+	position: relative;
+	padding-top: 10px;
+	height: auto; 
+}
+#mmap,#muser{
+	padding: 20px 10px 20px 10px;
+	font-weight: bold;
+}
+.m1{
+	font-size: 20px;
+	padding: 5px 5px 10px 5px;
+}
+.m2{
+	padding: 10px 5px 10px 5px;
+	width: 70px;
+	float: right;
+}
+.m3 input{
+	padding: 10px 5px 10px 5px;
+	width: 200px;
+	padding: 3px;
+}
+.m4{	
+	padding: 3px;
+	font-weight: normal;
+}
+#smit{
+	margin: 20px 500px 10px 200px;
+	padding: 5px;
+	cursor: pointer;
+}
+#camera{
+	padding-top:20px;
+	border: none;
+	float:right;
+	width:470px;
+	height: 175px;
+	background:#CFF;
+	text-align:center;
+}
+#webcam{
+	padding-top:20px;
+	border: none;
+	float:left;
+	width:470px;
+	background:#CFF;
+	text-align:center;
+	height:175px;
+	}
+.divTruccanh{
+	margin-top:20px;
+	background:#CFF;
+	text-align:center;
+	padding-top:20px;
+	padding-bottom:20px;
+	}
+.save{
+	width:80px;
+	height:30px;
+	background:#CFF;
+	}
+.bttruccanh{
+	width:100px;
+	height:40px;
+	background:#9FF;
+	}
+#maintruccanh{
+	display:none;
+	}
+.slide{
+	cursor:pointer;
+	}
+#setup{
+	/*background:#9FF;*/
+	text-align:center;
+	padding-top:20px;
+	padding-bottom:20px;
+	}

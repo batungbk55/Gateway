@@ -1,0 +1,81 @@
+#header {
+	background:url("images/hd1.png");
+	width:980px;
+	height:200px;
+	margin: 10px;
+	position: relative;
+} 
+.log3{
+	border-bottom: solid 1px #b0bb88;
+	display: block;
+	font: bold 30px Comfortaa;
+	padding-bottom: 10px;
+	color: #212713;
+	float: right;
+}
+.log5{
+	border-bottom: solid 1px #b0bb88;
+	display: block;
+	font: bold 30px Comfortaa;
+	padding-bottom: 10px;
+	color: #212713;
+	float: left;
+}
+#left_con{
+	width: 470px;
+	height: 600px;
+	float: left;
+}
+#message1{
+	height: 530px; 
+	width: 470px; 
+	overflow: auto; 
+	background-color: silver; 
+	border: 2px solid #555555;
+	margin-top: 10px;
+}
+#right_con{
+	width: 470px;
+	background:#6E8B3D;
+	height: 600px;
+	float: right;
+	height: 580px;
+}
+#message{
+	height: 530px; 
+	width: 470px; 
+	overflow: auto; 
+	background-color: silver; 
+	border: 2px solid #555555;
+	margin-top: 10px;
+}
+#mainpage{
+	background:#6E8B3D;
+	width:960px;
+	margin:10px;
+	position: relative;
+	padding-top: 10px;
+	height: 620px; 
+}
+button {
+	cursor: pointer;
+	margin-left: 10px;
+	padding: 5px 10px 5px 10px;
+	font-weight: bold;
+}
+.title_back select {
+	width: 150px;
+	padding: 2px;
+	margin-left: 10px;
+}
+.title_back{
+	margin-top: 50px;	
+}
+.log4{
+	border-bottom: solid 1px #b0bb88;
+	display: block;
+	font: bold 21px Comfortaa;
+	padding-bottom: 10px;
+	color: #212713;
+	margin-top: 50px;
+}

@@ -1,0 +1,30 @@
+<?php
+// database connect
+$connect =mysql_pconnect('localhost','root','')or die("ko ket noi dc");//ket noi sql
+$connect =mysql_select_db('ws')or die("ko co cai nay");
+mysql_query("SETNAME 'UTF8'");
+
+// header
+echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
+echo "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n";
+echo "<head>\n";
+echo "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\" />\n";
+echo "<title>ajax test</title>\n";
+// jquery
+echo "<script type=\"text/javascript\" src=\"jquery.js\"></script>\n";
+?>
+<script type="text/javascript">
+var auto_refresh = setInterval(function () {
+$('#loading').load('listen.php').fadeIn("slow");}, 5000); // refresh every 10000 milliseconds
+</script>
+<?php
+// end head
+echo "</head>\n";
+// body
+echo "<body>\n";
+echo "<p>The updates are:</p>\n";
+echo "<div id=\"loading\">\n";
+require("listen.php");
+echo "</div>\n";
+echo "end\n";
+echo "</body></html>\n";

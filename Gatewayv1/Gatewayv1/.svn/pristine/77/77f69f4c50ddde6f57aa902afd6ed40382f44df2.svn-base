@@ -1,0 +1,498 @@
+﻿using System;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Xml;
+namespace Emboard
+{
+    public partial class Emboard : Form
+    {
+        public byte[] confixcmd = new byte[4] {255, 255, 0, 36};
+        /************************************************************************
+        ** Code panel Threshold 
+        ************************************************************************/
+        private void linkthreshold_Click(object sender, System.EventArgs e)
+        {
+            Database myDatabase = new Database();
+            lbNode.Enabled = true;
+            lbGeneral.Enabled = true;
+            linkthreshold.Enabled = false;
+
+            pnGeneral.Visible = false;
+            pnNode.Visible = false;
+            pnthreshold.Visible = true;
+
+            panel2.Visible = true;
+            panel2.Controls.Add(pnthreshold);
+            pnthreshold.Location = new Point(0, 0);
+            txtTemThresh.Text = myDatabase.getTempMax().ToString();
+            txtHumiThresh.Text = myDatabase.getHumiMax().ToString();
+            txtPhoneThresh.Text = myDatabase.getPhoneNumber().ToString();
+            cbSmokeThresh.SelectedIndex = -1;
+        }
+        //Kiem tra cho du lieu nhiet do nhap vao textbox la so
+        private void txtTemThresh_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char keycode = e.KeyChar;
+            int c = (int)keycode;
+            // Kiểm tra ký tự vừa nhập vào có phải là các số nằm trong khoảng
+            // 0..9 hoặc ký tự "." hoặc "-" hoặc "Backspace"
+            if ((c >= 48) && (c <= 57) || (c == 45) || (c == 46) || (c == 8))
+            {
+                e.Handled = false;
+            }
+            else
+            {
+                e.Handled = true;
+                MessageBox.Show("Nhiệt độ chỉ được nhập ký tự số", "Thông báo");
+            }
+        }
+        //Kiem tra cho du lieu do am nhap vao textbox la so
+        private void txtHumiThresh_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char keycode = e.KeyChar;
+            int c = (int)keycode;
+            // Kiểm tra ký tự vừa nhập vào có phải là các số nằm trong khoảng
+            // 0..9 hoặc ký tự "." hoặc "-" hoặc "Backspace"
+            if ((c >= 48) && (c <= 57) || (c == 45) || (c == 46) || (c == 8))
+            {
+                e.Handled = false;
+            }
+            else
+            {
+                e.Handled = true;
+                MessageBox.Show("Độ ẩm chỉ được nhập ký tự số", "Thông báo");
+            }
+        }
+        //Kiem tra cho du lieu phonenumber nhap vao textbox la so
+        private void txtPhoneThresh_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char keycode = e.KeyChar;
+            int c = (int)keycode;
+            // Kiểm tra ký tự vừa nhập vào có phải là các số nằm trong khoảng
+            // 0..9 hoặc ký tự "." hoặc "-" hoặc "Backspace"
+            if ((c >= 48) && (c <= 57) || (c == 8))
+            {
+                e.Handled = false;
+            }
+            else
+            {
+                e.Handled = true;
+                MessageBox.Show("Số điện thoại chỉ được nhập ký tự số", "Thông báo");
+            }
+        }
+
+        private void cbSmokeThresh_SelectedIndexChanged(object sender, System.EventArgs e)
+        {
+            int val = 32 + cbSmokeThresh.SelectedIndex;
+            confixcmd[2] = (byte)val;
+        }
+        private void btapplythreshold_Click(object sender, System.EventArgs e)
+        {
+            if (txtTemThresh.Text != "" && txtHumiThresh.Text != "" && txtPhoneThresh.Text != "")
+            {
+                Database myDatabase = new Database();
+                int a = myDatabase.setTemp(float.Parse(txtTemThresh.Text));
+                int b = myDatabase.setHumi(float.Parse(txtHumiThresh.Text));
+                int c = myDatabase.setPhoneNumber(txtPhoneThresh.Text);
+                if (cbSmokeThresh.SelectedIndex != -1)
+                {
+                    comPort.WriteData(confixcmd);
+                    DisplayData(MessageType.Incoming, "Thiet lap nong do nguong khoi", tbShow);
+                    MessageBox.Show("Sent successful", "Imformation");
+                }
+                else
+                {
+                    MessageBox.Show("Save successful", "Imformation");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Not enough imformation","Error");
+            }
+        }
+        private void btCancelThreshold_Click(object sender, System.EventArgs e)
+        {
+            try
+            {
+                Database myDatabase = new Database();
+                txtTemThresh.Text = myDatabase.getTempMax().ToString();
+                txtHumiThresh.Text = myDatabase.getHumiMax().ToString();
+                txtPhoneThresh.Text = myDatabase.getPhoneNumber().ToString();
+                cbSmokeThresh.SelectedIndex = -1;
+            }
+            catch { }
+        } 
+        /************************************************************************
+        ** Code panel General
+        ************************************************************************/
+        private void lbGeneral_Click(object sender, EventArgs e)
+        {
+            lbNode.Enabled = true;
+            lbGeneral.Enabled = false;
+            linkthreshold.Enabled = true;
+
+            pnNode.Visible = false;
+            pnGeneral.Visible = true;
+            pnthreshold.Visible = false;
+
+            panel2.Visible = true;
+            panel2.Controls.Add(pnGeneral);
+            pnGeneral.Location = new Point(0, 0);
+
+            cbMode.SelectedIndex = -1;
+            cbPeriod.Enabled = false;
+            btApply.Enabled = false;
+            btCancel.Enabled = false;
+           
+        }
+
+        private void cbMode_SelectedIndexChanged(object sender, System.EventArgs e)
+        {
+            try
+            {
+                btApply.Enabled = true;
+                btCancel.Enabled = true;
+                if (cbMode.SelectedIndex == 0)
+                {
+                    cbPeriod.Enabled = false;
+                    confixcmd[2] = 1;
+                }
+                if (cbMode.SelectedIndex == 1)
+                {
+                    cbPeriod.Enabled = true;
+                    for (int i = 1; i < 17; i++)
+                    {
+                        cbPeriod.Items.Add(" Level " + i);
+                    }
+                }
+
+                if (cbMode.SelectedIndex == 2)
+                {
+                }
+            }
+            catch { }
+        }
+
+        private void cbPeriod_SelectedIndexChanged(object sender, System.EventArgs e)
+        {
+            int value = 16 + cbPeriod.SelectedIndex + 1;
+            confixcmd[2] = (byte)value;
+            //MessageBox.Show(confixcmd[2].ToString());
+        }
+
+        private void btApply_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if(cbMode.SelectedIndex == 0)
+                {
+                        DisplayData(MessageType.Incoming, "Sensor chuyen sang che do thuc ngu!", tbShow);
+                        comPort.WriteData(confixcmd);
+                        MessageBox.Show("Sent successful!", "Infomations");
+                }
+                else
+                {
+                    if (cbPeriod.SelectedIndex != -1)
+                    {
+                            DisplayData(MessageType.Incoming, "Sensor chuyen sang che do active!", tbShow);
+                            comPort.WriteData(confixcmd);
+                            MessageBox.Show("Sent successful!", "Infomations");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Not enough imformation","Error");
+                        }
+                 }
+                    
+            }
+            catch { }
+        }
+
+        private void btCancel_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                cbPeriod.Enabled = false;
+                cbMode.SelectedIndex = -1;
+                btApply.Enabled = false;
+                btCancel.Enabled = false;
+            }
+            catch { }
+        }
+        /************************************************************************
+       ** Code panel node
+       ************************************************************************/
+        private void lbNode_Click(object sender, EventArgs e)
+        {
+            lbNode.Enabled = false;
+            lbGeneral.Enabled = true;
+            linkthreshold.Enabled = true;
+
+            pnGeneral.Visible = false;
+            pnNode.Visible = true;
+            pnthreshold.Visible = false;
+
+            panel2.Visible = true;
+            panel2.Controls.Add(pnNode);
+            pnNode.Location = new Point(0, 0);
+            rbCreateNode.Checked = true;
+        }
+        //Kiem tra ki tu nhap vao Latitude co phai la so khong
+        private void tbLatitude_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char keycode = e.KeyChar;
+            int c = (int)keycode;
+            // Kiểm tra ký tự vừa nhập vào có phải là các số nằm trong khoảng
+            // 0..9 hoặc ký tự "." hoặc "-" hoặc "Backspace"
+            if ((c >= 48) && (c <= 57) || (c == 45) || (c == 46) || (c == 8))
+            {
+                e.Handled = false;
+            }
+            else
+            {
+                e.Handled = true;
+                MessageBox.Show("Latitude must input form number!", "Error");
+            }
+        }
+        //Kiem tra ki tu nhap vao Longitude co phai la so khong
+        private void tbLongitude_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char keycode = e.KeyChar;
+            int c = (int)keycode;
+            // Kiểm tra ký tự vừa nhập vào có phải là các số nằm trong khoảng
+            // 0..9 hoặc ký tự "." hoặc "-" hoặc "Backspace"
+            if ((c >= 48) && (c <= 57) || (c == 45) || (c == 46) || (c == 8))
+            {
+                e.Handled = false;
+            }
+            else
+            {
+                e.Handled = true;
+                MessageBox.Show("Longitude must input form number!", "Error");
+            }
+        }
+        private void rbCreateNode_Click(object sender, EventArgs e)
+        {
+            cbSelectNode.SelectedIndex = -1;
+            tbLatitude.Text = string.Empty;
+            tbLongitude.Text = string.Empty;
+            tbActor.Text = string.Empty;
+            tbLatitude.ReadOnly = false;
+            tbLongitude.ReadOnly = false;
+            tbActor.ReadOnly = false;
+            tbActor.Enabled = true;
+            lbActor.Enabled = true;
+            txtmac.Text = "";
+            txtmac.Show();
+            cbmac.Hide();
+            btCreate.Text = "Create Node";
+        }
+        private void rbDeleteNode_Click(object sender, EventArgs e)
+        {
+            cbSelectNode.SelectedIndex = -1;
+            cbmac.Items.Clear();
+            cbmac.Text = "";
+            tbLatitude.Text = string.Empty;
+            tbLongitude.Text = string.Empty;
+            tbActor.Text = string.Empty;
+            tbLatitude.ReadOnly = true;
+            tbLongitude.ReadOnly = true;
+            tbActor.ReadOnly = true;
+            tbActor.Enabled = true;
+            lbActor.Enabled = true;
+            txtmac.Hide();
+            cbmac.Show();
+            btCreate.Text = "Delete Node";
+        }
+
+        private void cbSelectNode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                cbSelectNode.DropDownStyle = ComboBoxStyle.DropDownList;
+                tbLatitude.Text = string.Empty;
+                tbLongitude.Text = string.Empty;
+                tbActor.Text = string.Empty;
+                int index = cbSelectNode.SelectedIndex;
+                if (index == 0)
+                {
+                    cbmac.Items.Clear();
+                    cbmac.Text = "";
+                    tbActor.Enabled = true;
+                    lbActor.Enabled = true;
+                    Database my_Database = new Database();
+                    XmlNodeList nodeSensor = ((XmlElement)my_Database.sensor).GetElementsByTagName("node");
+                    foreach (XmlNode node in nodeSensor)
+                    {
+                        string str = node.Attributes["mac"].Value;
+                        cbmac.Items.Add(str);
+                    }
+                }
+                else
+                {
+                    cbmac.Items.Clear();
+                    cbmac.Text = "";
+                    tbActor.Enabled = false;
+                    lbActor.Enabled = false;
+                    Database my_Database = new Database();
+                    XmlNodeList nodeActor = ((XmlElement)my_Database.actor).GetElementsByTagName("node");
+                    foreach (XmlNode node in nodeActor)
+                    {
+                        string str = node.Attributes["mac"].Value;
+                        cbmac.Items.Add(str);
+                    }
+
+                }
+            }
+            catch { }
+        }
+
+        private void cbmac_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                Database my_Database = new Database();
+                int index = cbSelectNode.SelectedIndex;
+                if (index == 0)
+                {
+                    if (rbDeleteNode.Checked == true)
+                    {
+                        string macSensor = cbmac.Text;
+                        tbLatitude.Text = my_Database.getSensorPixel_x(macSensor).ToString();
+                        tbLongitude.Text = my_Database.getSensorPixel_y(macSensor).ToString();
+                        tbActor.Text = my_Database.getVanSensor(macSensor);
+                    }
+                }
+                else
+                {
+                    string macActor = cbmac.Text;
+                    tbLatitude.Text = my_Database.getActorPixel_x(macActor).ToString();
+                    tbLongitude.Text = my_Database.getActorPixel_y(macActor).ToString();
+                }
+            }
+            catch { }
+        }
+        private void btCreate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Database my_Database = new Database();
+                if (btCreate.Text == "Create Node")
+                {
+                        if (cbSelectNode.SelectedIndex == 0)
+                        {
+                            if (txtmac.Text != "" && tbLatitude.Text != "" && tbLongitude.Text != "" && tbActor.Text != "")
+                            {
+                                string mac = txtmac.Text;
+                                int latitude = int.Parse(tbLatitude.Text);
+                                int longitude = int.Parse(tbLongitude.Text);
+                                string actor = tbActor.Text;
+                                if (my_Database.CheckSensor(mac))
+                                {
+                                    int a = my_Database.setSensorPixel_x(mac, latitude);
+                                    int b = my_Database.setSensorPixel_y(mac, longitude);
+                                    int c = my_Database.setVanSensor(mac, actor);
+                                    if (a == 1 && b == 1 && c == 1)
+                                    {
+                                        MessageBox.Show("Saved succeessful! ", "Informations");
+                                    }
+                                }
+                                else
+                                {
+                                    int d = my_Database.setSensor(mac, latitude, longitude, actor);
+                                    if (d == 1)
+                                    {
+                                        MessageBox.Show("Saved succeessful! ", "Informations");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("Not enough informations!", "Error");
+                            }
+                        }
+                        else
+                        {
+                            if (txtmac.Text != "" && tbLatitude.Text != "" && tbLongitude.Text != "")
+                            {
+                                string mac = txtmac.Text;
+                                int latitude = int.Parse(tbLatitude.Text);
+                                int longitude = int.Parse(tbLongitude.Text);
+                                string actor = tbActor.Text;
+                                if (my_Database.CheckActor(mac))
+                                {
+                                    int a = my_Database.setActorPixel_x(mac, latitude);
+                                    int b = my_Database.setActorPixel_y(mac, longitude);
+                                    if (a == 1 && b == 1)
+                                    {
+                                        MessageBox.Show("Saved succeessful! ", "Informations");
+                                    }
+                                }
+                                else
+                                {
+                                    int d = my_Database.setActor(mac, latitude, longitude);
+                                    if (d == 1)
+                                    {
+                                        MessageBox.Show("Saved succeessful! ", "Informations");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("Not enough informations!", "Error");
+                            }
+                        }
+                    }
+                if (btCreate.Text == "Delete Node")
+                {
+                    if (cbmac.SelectedIndex != -1)
+                    {
+                        string mac = cbmac.Text;
+                        DialogResult result = MessageBox.Show("Do you want to delete " + cbSelectNode.Text + " " + cbmac.Text + "?", "Warring",MessageBoxButtons.OKCancel,MessageBoxIcon.Question,MessageBoxDefaultButton.Button1);
+                        if (result == DialogResult.OK)
+                        {
+
+                            if (cbSelectNode.SelectedIndex == 0)
+                            {
+                                int totalSensor = my_Database.getTotalSensor();
+                                int a = my_Database.deleteSensor(mac);
+                                if (a == 1)
+                                {
+                                    totalSensor--;
+                                    my_Database.setTotalSensor(totalSensor);
+                                    MessageBox.Show("Deleted succeessful! ", "Informations");
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Deleted unsucceessful! ", "Informations");
+                                }
+                            }
+                            else
+                            {
+                                int totalActor = my_Database.getTotalActor();
+                                int a = my_Database.deleteActor(mac);
+                                if (a == 1)
+                                {
+                                    totalActor--;
+                                    my_Database.setTotalActor(totalActor);
+                                    MessageBox.Show("Deleted succeessful!", "Informations");
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Deleted unsucceessful!", "Informations");
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("You must select node or MAC address!", "Error");
+                    }
+                }
+                comPort.reload(comPort.pictureBox);
+            }
+            catch { }
+        }
+        
+    }
+}

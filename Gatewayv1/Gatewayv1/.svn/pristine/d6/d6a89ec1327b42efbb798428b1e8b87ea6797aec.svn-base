@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <sensor total="12">
+    <node mac="01" network_ip="1111" status="false" pixel_x="222" pixel_y="99" temperature="50.69" humidity="100" energy="0.2443503" Val="V1" time="3/26/2013 10:31:54 AM" />
+    <node mac="03" network_ip="3292" status="false" pixel_x="270" pixel_y="99" temperature="22.97" humidity="70.44577" energy="2.42772" Val="V1" time="8/15/2163 9:37:26 PM" />
+    <node mac="04" network_ip="1236" status="false" pixel_x="270" pixel_y="142" temperature="-34.13" humidity="61.79438" energy="0.2431786" Val="V2" time="2/24/2013 10:28:55 PM" />
+    <node mac="05" network_ip="287A" status="false" pixel_x="321" pixel_y="99" temperature="23.66" humidity="68.10699" energy="2.465185" Val="V2" time="8/15/2163 9:36:31 PM" />
+    <node mac="06" network_ip="1233" status="false" pixel_x="321" pixel_y="142" temperature="-34.13" humidity="61.79438" energy="0.2431786" Val="V3" time="2/24/2013 10:28:55 PM" />
+    <node mac="07" network_ip="011D" status="false" pixel_x="369" pixel_y="99" temperature="23.7" humidity="69.87014" energy="3.156996" Val="V3" time="8/15/2163 9:37:31 PM" />
+    <node mac="08" network_ip="50F5" status="false" pixel_x="369" pixel_y="142" temperature="24.68" humidity="68.79797" energy="2.742386" Val="V4" time="8/15/2163 7:54:45 AM" />
+    <node mac="09" network_ip="0002" status="false" pixel_x="418" pixel_y="99" temperature="23.68" humidity="70.07406" energy="3.283535" Val="V4" time="8/15/2163 9:37:18 PM" />
+    <node mac="02" network_ip="143E" status="false" pixel_x="222" pixel_y="142" temperature="20.58" humidity="70.70547" energy="2.368332" Val="V1" time="8/15/2163 12:13:30 PM" />
+    <node mac="0A" network_ip="0002" status="false" pixel_x="418" pixel_y="142" temperature="25.36" humidity="67.29944" energy="2.480497" Val="V5" time="2/15/2235 6:25:23 PM" />
+  </sensor>
+  <actor total="2">
+    <node mac="00" network_ip="0000" status="true" pixel_x="343" pixel_y="129" energy="0" />
+    <node mac="B1" network_ip="2542" status="false" pixel_x="333" pixel_y="11" energy="0" />
+  </actor>
+  <general>
+    <index temperature="39" humidity="80" phonenumber="01689936857" />
+    <config control="5" alarm="10" />
+  </general>
+  <van total="5">
+    <val id="1" pixel_x="221" pixel_y="50" state="off" time="0" />
+    <val id="2" pixel_x="267" pixel_y="50" state="off" time="0"/>
+    <val id="3" pixel_x="319" pixel_y="50" state="off" time="0"/>
+    <val id="4" pixel_x="369" pixel_y="50" state="off" time="0"/>
+    <val id="5" pixel_x="418" pixel_y="50" state="off" time="0"/>
+  </van>
+</root>

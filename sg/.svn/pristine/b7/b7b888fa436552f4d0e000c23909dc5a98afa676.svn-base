@@ -1,0 +1,28 @@
+<table>
+  <tr>
+    <td class="edit1">Node ID (MAC):</td>
+    <td style=""><select id="snode"><option value="">--Chọn node mạng--</option>
+<?php
+require 'dbconnect.php'; 
+$sql1 = "SELECT mac FROM node WHERE 1";
+$query1 = mysql_query($sql1);
+while ($row1 = mysql_fetch_array($query1)){
+	$mac = $row1['mac'];
+	echo "<option value='".$mac."' >Node ".$mac."</option>";
+}
+?>
+	</select>
+	</td>
+  </tr>
+<tr>
+<td class="edit1">Lattitude:</td>
+<td><input id="latn" type="text"></td>
+<td class="alert"><span id="lat_alert"></span></td>
+</tr>
+<tr>
+<td class="edit1">Longtitude:</td>
+<td><input id="lonn" type="text"></td>
+<td class="alert"><span id="lon_alert"></span></td>
+</tr>
+</table>
+<button onclick="edit()" id="c_create">Lưu thay đổi</button>

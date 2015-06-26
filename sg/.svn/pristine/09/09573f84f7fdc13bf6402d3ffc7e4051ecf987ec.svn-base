@@ -1,0 +1,3 @@
+<?php
+exec("ping2.bat");
+?>

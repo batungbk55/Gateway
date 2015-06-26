@@ -1,0 +1,14 @@
+﻿<?php
+require 'dbconnect.php';
+$msg = $_POST['command'];
+$mac = substr($msg,0,2); 
+$state = substr($msg,2,3);   
+$sql="select * from cdata WHERE mac='".$mac."'";
+$query=mysql_query($sql);
+while($row = mysql_fetch_array($query)){
+	$network_ip = $row['netip'];
+}
+$command = $network_ip.$state."$";
+mysql_query("insert into command values ('".$command."')");
+echo $command;
+?>

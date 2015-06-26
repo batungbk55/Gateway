@@ -1,0 +1,11 @@
+<?php
+	require 'dbconnect.php';
+	$m = $_POST['m'];
+	$q1 = mysql_query("SELECT networkip FROM node WHERE mac= '".$m."'");
+	while($r1 = mysql_fetch_array($q1)){
+		$nip = $r1['networkip'];
+	}
+	$command = $nip."$";
+	mysql_query("insert into command values ('".$command."')");
+	echo $command;
+?>

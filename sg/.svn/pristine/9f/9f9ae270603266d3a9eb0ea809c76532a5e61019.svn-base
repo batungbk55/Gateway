@@ -1,0 +1,25 @@
+<?php
+include("dbconnect.php");
+$u = $_POST['username'];
+$p = $_POST['password'];
+$i = $_POST['identify'];
+$f = $_POST['fullname'];
+$response="false";
+$flag="false";
+$sql="Select user_id from user where user_name='".$u."'";
+$query=mysql_query($sql);
+if (!$query) {
+	echo $response;
+}
+else{
+	while($row=mysql_fetch_row($query)) {
+		$flag="true";
+	}
+	if($flag=="false"){
+		$sql1="Insert into user (fullname, user_name, password, user_id) values ('".$f."','".$u."','".$p."','".$i."')";
+		$query1=mysql_query($sql1);
+		$response="true";
+	}
+}
+echo $response;
+?>

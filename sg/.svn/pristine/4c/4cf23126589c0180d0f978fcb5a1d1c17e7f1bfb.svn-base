@@ -1,0 +1,5 @@
+<?php
+
+pclose(popen("start /B ping2.bat","r"));die();
+
+?>

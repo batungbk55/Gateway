@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <sensor total="3">
+    <node mac="34" network_ip="9990" status="True" pixel_x="0" pixel_y="0" />
+    <node mac="31" network_ip="1234" status="True" pixel_x="0" pixel_y="0" />
+    <node mac="32" network_ip="1235" status="True" pixel_x="0" pixel_y="0" />
+  </sensor>
+  <data total="0">
+  </data>
+</root>

@@ -1,0 +1,294 @@
+<Configuration>
+  <SettingsComponent>
+    <string />
+    <integer />
+    <boolean>
+      <setting name="SolutionAnalysisEnabled">False</setting>
+    </boolean>
+  </SettingsComponent>
+  <RecentFiles>
+    <RecentFiles>
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:Map.cs" caret="3331" fromTop="27" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabSetting.cs" caret="8937" fromTop="0" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabConnect.cs" caret="5129" fromTop="22" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:connection.cs" caret="172" fromTop="9" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:libDatabase.cs" caret="33631" fromTop="29" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:Form1.cs" caret="612" fromTop="20" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:Form1.Designer.cs" caret="33549" fromTop="569" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="15261" fromTop="12" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:libCOM.cs" caret="8065" fromTop="6" />
+    </RecentFiles>
+    <RecentEdits>
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:libCOM.cs" caret="23569" fromTop="6" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:libCOM.cs" caret="24213" fromTop="15" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:libCOM.cs" caret="24657" fromTop="14" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:libCOM.cs" caret="25268" fromTop="17" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:libDatabase.cs" caret="32536" fromTop="20" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:libDatabase.cs" caret="13" fromTop="0" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:libDatabase.cs" caret="33087" fromTop="22" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:libDatabase.cs" caret="33631" fromTop="22" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="17150" fromTop="22" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="422" fromTop="13" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="16678" fromTop="7" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="15417" fromTop="14" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:libCOM.cs" caret="30046" fromTop="12" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="2025" fromTop="14" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:Form1.cs" caret="612" fromTop="20" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="2197" fromTop="19" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:libCOM.cs" caret="7671" fromTop="14" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:libCOM.cs" caret="148" fromTop="7" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:libCOM.cs" caret="28161" fromTop="11" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="13" fromTop="0" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="184" fromTop="7" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="1839" fromTop="10" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="17160" fromTop="5" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="15294" fromTop="11" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="8515" fromTop="15" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="10107" fromTop="17" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="11866" fromTop="13" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="12955" fromTop="7" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:TabMap.cs" caret="14044" fromTop="10" />
+      <File id="74940772-7490-41AF-ACB4-E3163296740A/f:libCOM.cs" caret="8065" fromTop="6" />
+    </RecentEdits>
+  </RecentFiles>
+  <NAntValidationSettings>
+    <NAntPath value="" />
+  </NAntValidationSettings>
+  <UnitTestRunner>
+    <Providers />
+  </UnitTestRunner>
+  <UnitTestRunnerNUnit>
+    <NUnitInstallDir IsNull="False">
+    </NUnitInstallDir>
+    <UseAddins>Never</UseAddins>
+  </UnitTestRunnerNUnit>
+  <CompletionStatisticsManager>
+    <ItemStatistics item="Default">
+      <Item value="Graphical`0" priority="2" />
+      <Item value="new" priority="13" />
+      <Item value="Graphical" priority="1" />
+      <Item value="public" priority="6" />
+      <Item value="Bitmap`0" priority="1" />
+      <Item value="Bitmap" priority="3" />
+      <Item value="return" priority="2" />
+      <Item value="_bgBitmap" priority="3" />
+      <Item value="_mapBitmap" priority="1" />
+      <Item value="_iconBitmap" priority="1" />
+      <Item value="_bgGraphical" priority="1" />
+      <Item value="Graphics`0" priority="1" />
+      <Item value="_iconGraphical" priority="1" />
+      <Item value="Load`0" priority="0" />
+      <Item value="void" priority="2" />
+      <Item value="pictureBox1" priority="3" />
+      <Item value="int" priority="7" />
+      <Item value="if" priority="13" />
+      <Item value="mousex" priority="2" />
+      <Item value="mousey" priority="2" />
+      <Item value="MessageBox`0" priority="9" />
+      <Item value="MouseDown`0" priority="0" />
+      <Item value="e" priority="3" />
+      <Item value="bool" priority="5" />
+      <Item value="t2" priority="0" />
+      <Item value="else" priority="2" />
+      <Item value="contextMenu2" priority="2" />
+      <Item value="contextMenu1" priority="1" />
+      <Item value="Control`0" priority="1" />
+      <Item value="Point`0" priority="2" />
+      <Item value="object" priority="0" />
+      <Item value="Control" priority="2" />
+      <Item value="this" priority="2" />
+      <Item value="PointToClient`0" priority="1" />
+      <Item value="MousePosition" priority="1" />
+      <Item value="Right" priority="0" />
+      <Item value="string" priority="3" />
+      <Item value="byte" priority="5" />
+      <Item value="convert" priority="0" />
+      <Item value="test" priority="3" />
+      <Item value="comPort" priority="2" />
+      <Item value="testcm" priority="0" />
+      <Item value="tbShow" priority="2" />
+      <Item value="for" priority="1" />
+      <Item value="Database`0" priority="0" />
+      <Item value="Database" priority="0" />
+      <Item value="myDatabase" priority="6" />
+      <Item value="false" priority="9" />
+      <Item value="XmlNodeList`0" priority="0" />
+      <Item value="node" priority="3" />
+      <Item value="Convert`0" priority="2" />
+      <Item value="x" priority="0" />
+      <Item value="sensor" priority="0" />
+      <Item value="switch" priority="0" />
+      <Item value="status" priority="0" />
+      <Item value="case" priority="1" />
+      <Item value="break" priority="1" />
+      <Item value="Drawmap`0" priority="0" />
+      <Item value="i" priority="4" />
+      <Item value="pixel_x" priority="0" />
+      <Item value="cbPeriod" priority="6" />
+      <Item value="cbMode" priority="4" />
+      <Item value="true" priority="14" />
+      <Item value="tbtemperature" priority="2" />
+      <Item value="tbhumidity" priority="2" />
+      <Item value="tbSmokeThreshold" priority="4" />
+      <Item value="tbphonenumber" priority="2" />
+      <Item value="confixcmd" priority="4" />
+      <Item value="value" priority="1" />
+      <Item value="tabControl1" priority="2" />
+      <Item value="lbNode" priority="1" />
+      <Item value="pnNode" priority="3" />
+      <Item value="Location" priority="0" />
+      <Item value="Point" priority="3" />
+      <Item value="btApply" priority="1" />
+      <Item value="btCancel" priority="1" />
+      <Item value="DateTime`0" priority="6" />
+      <Item value="panel2" priority="0" />
+      <Item value="emboard" priority="6" />
+      <Item value="Emboard`0" priority="0" />
+      <Item value="check" priority="0" />
+      <Item value="vanbom" priority="0" />
+      <Item value="tt" priority="0" />
+      <Item value="_mac" priority="0" />
+      <Item value="mesg" priority="0" />
+      <Item value="nhietdo" priority="0" />
+      <Item value="doam" priority="0" />
+      <Item value="nguon" priority="0" />
+      <Item value="pnRequestData" priority="10" />
+      <Item value="DisplayData`0" priority="1" />
+      <Item value="MessageType`0" priority="1" />
+      <Item value="tbRequestData" priority="2" />
+      <Item value="ip" priority="0" />
+      <Item value="mac" priority="0" />
+      <Item value="Controls" priority="0" />
+      <Item value="tabMap" priority="1" />
+      <Item value="TabControl`0" priority="0" />
+      <Item value="using" priority="0" />
+      <Item value="Emboard" priority="0" />
+      <Item value="Properties" priority="0" />
+      <Item value="Label`0" priority="0" />
+      <Item value="Label" priority="0" />
+      <Item value="tet" priority="1" />
+      <Item value="command" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@System.Drawing.Graphics">
+      <Item value="FromImage`0" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Drawing.Graphics">
+      <Item value="DrawImage`0" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Windows.Forms.PictureBox">
+      <Item value="Image" priority="0" />
+      <Item value="Controls" priority="2" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@System.Windows.Forms.MessageBox">
+      <Item value="Show`0" priority="9" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Windows.Forms.MouseEventArgs">
+      <Item value="X" priority="0" />
+      <Item value="Y" priority="0" />
+      <Item value="Button" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Int32">
+      <Item value="ToString`0" priority="2" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Windows.Forms.ContextMenu">
+      <Item value="Show`0" priority="3" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@System.Windows.Forms.Control">
+      <Item value="MousePosition" priority="0" />
+      <Item value="ControlCollection`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@System.Drawing.Point">
+      <Item value="Empty" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Windows.Forms.Control+ControlCollection">
+      <Item value="Add`0" priority="7" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:Emboard.libConvert">
+      <Item value="ConvertTobyte`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:Emboard.libCOM">
+      <Item value="WriteData`0" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Windows.Forms.TextBox">
+      <Item value="Text" priority="4" />
+      <Item value="ReadOnly" priority="11" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:Emboard.Database">
+      <Item value="getTotalSensor`0" priority="0" />
+      <Item value="StatusSensor`0" priority="1" />
+      <Item value="GetX`0" priority="1" />
+      <Item value="GetY`0" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Xml.XmlNode">
+      <Item value="Attributes" priority="1" />
+      <Item value="ChildNodes" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@System.Convert">
+      <Item value="ToBoolean`0" priority="0" />
+      <Item value="ToInt32`0" priority="0" />
+      <Item value="ToInt16`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Xml.XmlAttribute">
+      <Item value="Value" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Windows.Forms.ComboBox">
+      <Item value="Items" priority="1" />
+      <Item value="SelectedIndex" priority="4" />
+      <Item value="Visible" priority="1" />
+      <Item value="Enabled" priority="4" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Windows.Forms.ComboBox+ObjectCollection">
+      <Item value="Add`0" priority="0" />
+      <Item value="Clear`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Byte">
+      <Item value="ToString`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Windows.Forms.TabControl">
+      <Item value="SelectedIndex" priority="2" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Windows.Forms.LinkLabel">
+      <Item value="Click" priority="0" />
+      <Item value="Controls" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Windows.Forms.Panel">
+      <Item value="Show`0" priority="2" />
+      <Item value="Location" priority="2" />
+      <Item value="Hide`0" priority="0" />
+      <Item value="Controls" priority="1" />
+      <Item value="Visible" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Drawing.Point">
+      <Item value="Equals`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Windows.Forms.Button">
+      <Item value="Enabled" priority="3" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@System.DateTime">
+      <Item value="Now" priority="6" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:Emboard.Emboard">
+      <Item value="DrawSensor`0" priority="0" />
+      <Item value="reload`0" priority="0" />
+      <Item value="showVanOn`0" priority="0" />
+      <Item value="showVanOff`0" priority="0" />
+      <Item value="showdata`0" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.String">
+      <Item value="Substring`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@Emboard.Emboard+MessageType">
+      <Item value="Incoming" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Windows.Forms.TabPage">
+      <Item value="Controls" priority="1" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:@System.Windows.Forms.TabControl">
+      <Item value="TabPageCollection`0" priority="0" />
+    </ItemStatistics>
+    <ItemStatistics item="Qualified:System.Windows.Forms.Label">
+      <Item value="Text" priority="0" />
+      <Item value="Show`0" priority="0" />
+    </ItemStatistics>
+  </CompletionStatisticsManager>
+</Configuration>

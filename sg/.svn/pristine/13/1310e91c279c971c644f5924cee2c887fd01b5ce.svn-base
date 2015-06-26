@@ -1,0 +1,4 @@
+<?php
+$connect =mysql_pconnect('localhost','root','')or die("Cannot connect server");
+$connect =mysql_select_db('ws')or die("Cannot connect database");
+?>
